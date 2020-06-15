@@ -15,7 +15,7 @@ class MainFrame  :
         self.fenetre = Tk()
         self.fenetre['bg'] = 'grey'
         self.fenetre.configure(width = 800, height = 800)
-        self.fenetre.title("titre_fenetre")
+        self.fenetre.title("Mon titre de fenêtre ici")
 
         #Affichage de la fenetre
         self.fenetre.mainloop()
