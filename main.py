@@ -1,28 +1,29 @@
 #!/bin/env python
 # coding=utf-8
 import threading as thread
-from tkinter import *
-from tkinter import ttk
+import SQLiteManager as db
+#from cherrypy import cherrypy
+import os.path
+from dao import dao_Personne
 
 
 
+class MonSiteWeb(object):
 
-class MainFrame  :
+    def index(self):
+        return "<h1>Bonjour à tous !</h1>"
+    #index.exposed = True
 
-    #Declaration des variables de l'interface
-    def __init__(self) :
-        #Déclaration de la fenetre
-        self.fenetre = Tk()
-        self.fenetre['bg'] = 'grey'
-        self.fenetre.configure(width = 800, height = 800)
-        self.fenetre.title("Mon titre de fenêtre ici")
+#config_serveur = os.path.join(os.path.dirname(__file__), 'serveur_web.conf')
+#cherrypy.quickstart(MonSiteWeb(), config = config_serveur)
 
-        #Affichage de la fenetre
-        self.fenetre.mainloop()
+manager = db.SQLiteManager()
+#manager.init_data_base()
+#dao_Personne.dao_Personne().insert_personne2(3, "BINA", "Aouda", 19841008)
 
 
-#lance la fenetre dans le Thread principal
-if __name__ == "__main__":
-    print("Dans le Thread principal")
-    f = thread.Thread(target = MainFrame)
-    f.start()
+dao_Personne.dao_Personne().update_personne2(3,'HALADI', 'Bina', 19850201)
+
+liste = dao_Personne.dao_Personne().get_all()
+for c in liste :
+    print(c.to_string())
