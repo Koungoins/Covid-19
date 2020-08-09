@@ -3,9 +3,9 @@ class Personne:
     #Constructeur de la classe Personne
     def __init__(self):
         self.id = -1
-        self.nom = None
-        self.prenom = None
-        self.date_de_naiss = None
+        self.nom = ""
+        self.prenom = ""
+        self.date_de_naiss = -1
 
     #Saisir une personne avec tout ses attributs d'un seul coup
     def set_personne(self, id, nom, prenom, date_de_naiss):

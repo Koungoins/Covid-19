@@ -7,6 +7,18 @@ class dao_Acces :
     def __init__(self):
         print("")
 
+    #Renvoi l'identifiant suivant en incrémentant l'id max dans la table
+    def next_id(self):
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        cursor.execute("SELECT MAX(id) FROM acces")
+        result = cursor.fetchall()
+        max = 1
+        if len(result) > 0 :
+            max = result[0][0]
+        base.close()
+        return max + 1
+
     #Récupère les données d'un acces dans la table acces à l'aide de son ID et renvoi un objet Acces
     def get_acces(self, id) :
         base = db.SQLiteManager()
@@ -38,14 +50,14 @@ class dao_Acces :
         base = db.SQLiteManager()
         cursor = base.connect()
         cursor.execute("INSERT INTO acces VALUES (?,?,?,?)",
-        (acces.get_id(), acces.get_login(), acces.get_mot_de_passe(), acces.get_id_personne()))
+        (self.next_id(), acces.get_login(), acces.get_mot_de_passe(), acces.get_id_personne()))
         base.close()
 
     #Crée un nouvel acces dans la table acces à l'aide des infos en argument
-    def insert_acces2(self, id, login, mot_de_passe, id_personne) :
+    def insert_acces2(self, login, mot_de_passe, id_personne) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("INSERT INTO acces VALUES (?, ?, ?, ?)",(id, login, mot_de_passe, id_personne))
+        cursor.execute("INSERT INTO acces VALUES (?, ?, ?, ?)",(self.next_id(), login, mot_de_passe, id_personne))
         base.close()
 
     #Met à jour les information d'un acces dans la table acces à l'aide des infos dans l'objet Acces en argument

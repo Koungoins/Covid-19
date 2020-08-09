@@ -7,6 +7,19 @@ class dao_Personne :
     def __init__(self):
         print("")
 
+    #Renvoi l'identifiant suivant en incrémentant l'id max dans la table
+    def next_id(self):
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        cursor.execute("SELECT MAX(id) FROM personnes")
+        result = cursor.fetchall()
+        max = 1
+        if len(result) > 0 :
+            max = result[0][0]
+        base.close()
+        return max + 1
+
+
     #Récupère les données d'une personne dans la table personnes à l'aide de son ID et renvoi un objet Personne
     def get_personne(self, id) :
         base = db.SQLiteManager()
@@ -39,15 +52,14 @@ class dao_Personne :
     def insert_personne(self, pers) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("INSERT INTO personnes VALUES (?,?,?,?)",
-        (pers.get_id(), pers.get_nom(), pers.get_prenom(), pers.get_date_de_naiss))
+        cursor.execute("INSERT INTO personnes VALUES (?,?,?,?)",(self.next_id(), pers.get_nom(), pers.get_prenom(), pers.get_date_de_naiss()))
         base.close()
 
     #Crée une nouvelle personne dans la table personne à l'aide des infos en argument
-    def insert_personne2(self, id, nom, prenom, date) :
+    def insert_personne2(self, nom, prenom, date) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("INSERT INTO personnes VALUES (?, ?, ?, ?)",(id, nom, prenom, date))
+        cursor.execute("INSERT INTO personnes VALUES (?, ?, ?, ?)",(self.next_id(), nom, prenom, date))
         base.close()
 
     #Met à jour les information d'une personne dans la table personne à l'aide des infos dans l'objet Personne en argument
@@ -55,7 +67,7 @@ class dao_Personne :
         base = db.SQLiteManager()
         cursor = base.connect()
         cursor.execute("UPDATE personnes SET nom = ?, prenom = ? ,date_de_naissance = ? WHERE id = ?",
-        (pers.get_nom(), pers.get_prenom(), pers.get_date_de_naiss, pers.get_id()))
+        (pers.get_nom(), pers.get_prenom(), pers.get_date_de_naiss(), pers.get_id()))
         base.close()
 
     #Met à jour les information d'une personne dans la table personne à l'aide des infos en argument

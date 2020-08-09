@@ -7,6 +7,19 @@ class dao_Coordonnees :
     def __init__(self):
         print("")
 
+
+    def next_id(self):
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        cursor.execute("SELECT MAX(id) FROM coordonnees")
+        result = cursor.fetchall()
+        max = 1
+        if len(result) > 0 :
+            max = result[0][0]
+        base.close()
+        return max + 1
+
+
     #Récupère les données des coordonnées dans la table coordonnées à l'aide de son ID et renvoi un objet Coordonnées
     def get_coordonnees(self, id) :
         base = db.SQLiteManager()
@@ -39,14 +52,14 @@ class dao_Coordonnees :
         base = db.SQLiteManager()
         cursor = base.connect()
         cursor.execute("INSERT INTO coordonnees VALUES (?,?,?,?,?)",
-        (coordonnees.get_id(), coordonnees.get_telephone(), coordonnees.get_adresse_postale(), coordonnees.get_adresse_mail(), coordonnees.get_id_personne()))
+        (self.next_id(), coordonnees.get_telephone(), coordonnees.get_adresse_postale(), coordonnees.get_adresse_mail(), coordonnees.get_id_personne()))
         base.close()
 
     #Crée des nouvelles coordonnées dans la table acces à l'aide des infos en argument
     def insert_coordonnees2(self, id, telephone, adresse_postale, adresse_mail, id_personne) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("INSERT INTO coordonnees VALUES (?, ?, ?, ?)",(id, telephone, adresse_postale, adresse_mail, id_personne))
+        cursor.execute("INSERT INTO coordonnees VALUES (?, ?, ?, ?)",(self.next_id(), telephone, adresse_postale, adresse_mail, id_personne))
         base.close()
 
     #Met à jour les information des coordonnées dans la table coordonnées à l'aide des infos dans l'objet Coordonnées en argument
