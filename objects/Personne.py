@@ -16,7 +16,7 @@ class Personne:
 
     #Affichage
     def to_string(self) :
-        return self.id , self.nom , self.prenom , self.date_de_naiss
+        return str(self.id) +", "+ self.nom +", "+ self.prenom +", "+ str(self.date_de_naiss)
 
     #Les SETTER permettent de saisirs les valeurs des attributs proprement
     def set_id(self, id) :

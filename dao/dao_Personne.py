@@ -24,7 +24,7 @@ class dao_Personne :
     def get_personne(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, nom, prenom, date_de_naissance FROM personnes WHERE id = ?", id)
+        cursor.execute("SELECT id, nom, prenom, date_de_naissance FROM personnes WHERE id = "+str(id))
         result = cursor.fetchall()
         p = None
         if len(result) > 0 :
@@ -52,15 +52,19 @@ class dao_Personne :
     def insert_personne(self, pers) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("INSERT INTO personnes VALUES (?,?,?,?)",(self.next_id(), pers.get_nom(), pers.get_prenom(), pers.get_date_de_naiss()))
+        current_id = self.next_id()
+        cursor.execute("INSERT INTO personnes VALUES (?,?,?,?)",(current_id, pers.get_nom(), pers.get_prenom(), pers.get_date_de_naiss()))
         base.close()
+        return current_id
 
     #Crée une nouvelle personne dans la table personne à l'aide des infos en argument
     def insert_personne2(self, nom, prenom, date) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("INSERT INTO personnes VALUES (?, ?, ?, ?)",(self.next_id(), nom, prenom, date))
+        current_id = self.next_id()
+        cursor.execute("INSERT INTO personnes VALUES (?, ?, ?, ?)",(current_id, nom, prenom, date))
         base.close()
+        return current_id
 
     #Met à jour les information d'une personne dans la table personne à l'aide des infos dans l'objet Personne en argument
     def update_personne(self, pers) :
@@ -81,14 +85,12 @@ class dao_Personne :
     def delete_personne(self, pers):
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("DELETE FROM personnes WHERE id = ?)",pers.get_id())
+        cursor.execute("DELETE FROM personnes WHERE id = ?",(pers.get_id()))
         base.close()
 
     #Supprime une personne dans la table personne
     def delete_personne2(self, id):
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("DELETE FROM personne WHERE id = ?)", id)
+        cursor.execute("DELETE FROM personnes WHERE id = "+ str(id))
         base.close()
-
-
