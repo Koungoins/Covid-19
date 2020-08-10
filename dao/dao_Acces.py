@@ -1,5 +1,5 @@
 import SQLiteManager as db
-from objects import Acces as acc
+from objects import acces as acc
 
 class dao_Acces :
 
@@ -17,13 +17,14 @@ class dao_Acces :
         if len(result) > 0 :
             max = result[0][0]
         base.close()
+        if max == None : max = 0
         return max + 1
 
     #Récupère les données d'un acces dans la table acces à l'aide de son ID et renvoi un objet Acces
     def get_acces(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, login, mot_de_passe, id_personne FROM acces WHERE id = ?", id)
+        cursor.execute("SELECT id, login, mot_de_passe, id_personne FROM acces WHERE id = ?", (id))
         result = cursor.fetchall()
         p = None
         if len(result) > 0 :
@@ -36,7 +37,7 @@ class dao_Acces :
     def get_acces_personne(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, login, mot_de_passe, id_personne FROM acces WHERE id_personne = ?", id)
+        cursor.execute("SELECT id, login, mot_de_passe, id_personne FROM acces WHERE id_personne = ?", (id))
         result = cursor.fetchall()
         p = None
         if len(result) > 0 :
@@ -49,16 +50,19 @@ class dao_Acces :
     def insert_acces(self, acces) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("INSERT INTO acces VALUES (?,?,?,?)",
-        (self.next_id(), acces.get_login(), acces.get_mot_de_passe(), acces.get_id_personne()))
+        id = self.next_id()
+        cursor.execute("INSERT INTO acces VALUES (?, ?, ?, ?)", (id, acces.get_login(), acces.get_mot_de_passe(), acces.get_id_personne()))
         base.close()
+        return id
 
     #Crée un nouvel acces dans la table acces à l'aide des infos en argument
     def insert_acces2(self, login, mot_de_passe, id_personne) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("INSERT INTO acces VALUES (?, ?, ?, ?)",(self.next_id(), login, mot_de_passe, id_personne))
+        id = self.next_id()
+        cursor.execute("INSERT INTO acces VALUES (?, ?, ?, ?)",(id, login, mot_de_passe, id_personne))
         base.close()
+        return id
 
     #Met à jour les information d'un acces dans la table acces à l'aide des infos dans l'objet Acces en argument
     def update_acces(self, acces) :
@@ -88,5 +92,3 @@ class dao_Acces :
         cursor = base.connect()
         cursor.execute("DELETE FROM acces WHERE id = ?)", id)
         base.close()
-
-
