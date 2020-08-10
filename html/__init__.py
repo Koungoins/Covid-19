@@ -1,10 +1,9 @@
-import html.html_Personne
-#import html.html_Acces
-#import html.html_Coordonnees
-#import html.html_Patient
-#import html.html_Medecin
-#import html.html_TestCovid19
-#import html.html_Questionnaire
-#import html.html_Question
-#import html.html_Reponse
-
+import html.html_medecins
+#import html.html_acces
+#import html.html_coordonnees
+#import html.html_patient
+#import html.html_medecin
+#import html.html_testCovid19
+#import html.html_questionnaire
+#import html.html_question
+#import html.html_reponse

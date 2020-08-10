@@ -1,10 +1,9 @@
-import objects.Personne
-import objects.Acces
-import objects.Coordonnees
-import objects.Patient
-import objects.Medecin
-import objects.TestCovid19
-import objects.Questionnaire
-import objects.Question
-import objects.Reponse
-
+import objects.personne
+import objects.acces
+import objects.coordonnees
+import objects.patient
+import objects.medecin
+import objects.teste_covid19
+import objects.questionnaire
+import objects.question
+import objects.reponse

@@ -1,5 +1,5 @@
 import SQLiteManager as db
-from objects import Personne as per
+from objects import personne as per
 
 class dao_Personne :
 

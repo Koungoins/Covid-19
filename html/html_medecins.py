@@ -1,34 +1,42 @@
-from dao import dao_Personne
-from objects import Personne
+from dao import dao_medecin
+from objects import medecin
+
 import cherrypy
 
-class html_Personne:
-
-
+class Pages_Medecins:
 
     def __init__(self):
         self.id_edite = -1
 
-    #Page ajouter une personne
+    #Page ajouter un médecin
     @cherrypy.expose
     def index(self):
         page = self.liste()
         return page
 
-    #Formulaire pour ajouter une personne
+    #Formulaire pour ajouter un médecin
     @cherrypy.expose
     def ajouter(self):
         page = '''
-        <title>Créer un nouveau patient</title>
-        <h1>Créer un nouveau patient</h1>
+        <title>Créer un nouveau médecin</title>
+        <h1>Créer un nouveau médecin</h1>
         <form action="enregistrer" method="GET">
             <div>
                 <label for="nom">Nom:</label>
-                <input type="text" id="nom" name="nom_patient"><br>
+                <input type="text" id="nom" name="nom_medecin"><br>
+
                 <label for="prenom">Prénom:</label>
-                <input type="text" id="prenom" name="prenom_patient"><br>
+                <input type="text" id="prenom" name="prenom_medecin"><br>
+
                 <label for="dateN">Date de naissance:</label>
                 <input type="date" id="dateN" name="date_patient"><br>
+
+                <label for="liberal">Libéral:</label>
+                <input type="checkbox" id="liberal" name="liberal" value="Libéral"><br>
+
+                <label for="hopital">Hopital:</label>
+                <input type="date" id="hopital" name="hopital"><br>
+
                 <input type="submit" value="Enregistrer">
             </div>
         </form>
@@ -36,11 +44,11 @@ class html_Personne:
         return page
 
 
-    #Affiche la liste des personnes dans la base
+    #Affiche la liste des medecins dans la base
     @cherrypy.expose
     def liste(self):
         page = "Les des personnes : <a href='ajouter'> Ajouter</a>"
-        liste = dao_Personne.dao_Personne().get_all()
+        liste = dao_Medecin.dao_Personne().get_all()
         for c in liste :
             #page = page + "<br><a href='edit?id="+str(c.get_id())+">"+c.to_string()+"</a>"
             page = page + '<br>' + c.to_string() + '<a href="edit?id=' + str(c.get_id())+'">Editer</a>, <a href="supprimer?id=' + str(c.get_id()) + '">Supprimer</a>'
