@@ -1,3 +1,7 @@
+#!/bin/env python
+# coding=utf-8
+from objects import coordonnees
+
 class Personne:
 
     #Constructeur de la classe Personne
@@ -6,6 +10,7 @@ class Personne:
         self.nom = ""
         self.prenom = ""
         self.date_de_naiss = -1
+        self.coordonnees = None
 
     #Saisir une personne avec tout ses attributs d'un seul coup
     def set_personne(self, id, nom, prenom, date_de_naiss):
@@ -31,6 +36,16 @@ class Personne:
     def set_date_de_naiss(self, date_de_naiss) :
         self.date_de_naiss = date_de_naiss
 
+    def set_coordonnees(self, telephone, ad_postale, mail):
+        coord = coordonnees.Coordonnees()
+        coord.set_telephone(telephone)
+        coord.set_adresse_postale(ad_postale)
+        coord.set_adresse_mail(mail)
+        coord.set_id_personne(self.get_id())
+        self.coordonnees = coord
+
+    def set_coordonnees2(self, coord):
+        self.coordonnees = coord
 
     #Les GETTER permettent de récupérer les valeurs des attributs proprement
     def get_id(self) :
@@ -44,3 +59,6 @@ class Personne:
 
     def get_date_de_naiss(self) :
         return  self.date_de_naiss
+
+    def get_coordonnees(self):
+        return self.coordonnees

@@ -1,9 +1,11 @@
-from dao import dao_personne
-from objects import personne
+#!/bin/env python
+# coding=utf-8
+from dao import dao_patient
+from objects import patient
 
 import cherrypy
 
-class Pages_Patients:
+class Pages_Patients(object) :
 
     def __init__(self):
         self.id_edite = -1
@@ -28,6 +30,8 @@ class Pages_Patients:
                 <input type="text" id="prenom" name="prenom_patient"><br>
                 <label for="dateN">Date de naissance:</label>
                 <input type="date" id="dateN" name="date_patient"><br>
+                <label for="nss">Numéro de Sécurité Sociale:</label>
+                <input type="number" id="nss" name="nss"><br>
                 <input type="submit" value="Enregistrer">
             </div>
         </form>
@@ -38,8 +42,8 @@ class Pages_Patients:
     #Affiche la liste des medecins dans la base
     @cherrypy.expose
     def liste(self):
-        page = "Les des personnes : <a href='ajouter'> Ajouter</a>"
-        liste = dao_Personne.dao_Personne().get_all()
+        page = "Les des patients : <a href='ajouter'> Ajouter</a>"
+        liste = dao_patient.dao_Patient().get_all_patients()
         for c in liste :
             #page = page + "<br><a href='edit?id="+str(c.get_id())+">"+c.to_string()+"</a>"
             page = page + '<br>' + c.to_string() + '<a href="edit?id=' + str(c.get_id())+'">Editer</a>, <a href="supprimer?id=' + str(c.get_id()) + '">Supprimer</a>'
@@ -47,19 +51,20 @@ class Pages_Patients:
 
     #Enregistre les information saisie dans le formulaire et affiche la liste des personnes enregistrées
     @cherrypy.expose
-    def enregistrer(self, nom_patient = "", prenom_patient = "", date_patient = -1):
-        p = personne.Personne()
+    def enregistrer(self, nom_patient, prenom_patient, date_patient, nss):
+        p = patient.Patient()
         p.set_nom(nom_patient)
         p.set_prenom(prenom_patient)
         p.set_date_de_naiss(date_patient)
+        p.set_nss(nss)
         #Enregistrement et récupère l'id
-        id = dao_Personne.dao_Personne().insert_personne(p)
+        id = dao_patient.dao_Patient().insert_patient(p)
         #Recherche la personne dans la base
-        pliste = dao_Personne.dao_Personne().get_personne(id)
-        page ="Nouvelle personne : <br>"
+        pliste = dao_patient.dao_Patient().get_patient(id)
+        page ="Nouveau patient : <br>"
         page = page + pliste.to_string()
         page = page + '''
-        <form action="liste"><input type="submit" value="Liste des personnes"></form>
+        <form action="liste"><input type="submit" value="Liste des patients"></form>
         '''
         return page
 
@@ -68,7 +73,7 @@ class Pages_Patients:
     def edit(self, id):
         self.id_edite = id
         page = "<h1>Edition d'une personne</h1>"
-        p = dao_Personne.dao_Personne().get_personne(id)
+        p = dao_patient.dao_Patient().get_patient(id)
         page = page + '''
         <form action="update" method="GET">
             <div>
@@ -78,6 +83,8 @@ class Pages_Patients:
                 <input type="text" id="prenom" name="prenom_patient" value="'''+p.get_prenom()+ '''"><br>
                 <label for="dateN">Date de naissance:</label>
                 <input type="date" id="dateN" name="date_patient" value="'''+p.get_date_de_naiss()+ '''"><br>
+                <label for="nss">Numéro de Sécurité Sociale:</label>
+                <input type="number" id="nss" name="nss" value="'''+p.get_nss()+ '''"><br>
                 <input type="submit" value="Modifier">
             </div>
         </form>
@@ -93,16 +100,16 @@ class Pages_Patients:
         p.set_prenom(prenom_patient)
         p.set_date_de_naiss(date_patient)
         #Enregistrement et récupère l'id
-        dao_Personne.dao_Personne().update_personne(p)
+        dao_personne.dao_Personne().update_personne(p)
         #Recherche la personne dans la base
-        pliste = dao_Personne.dao_Personne().get_personne(self.id_edite)
+        pliste = dao_personne.dao_Personne().get_personne(self.id_edite)
         page = pliste.to_string()
         return page
 
     #Supprime la personne dans la base
     @cherrypy.expose
     def supprimer(self, id):
-        dao_Personne.dao_Personne().delete_personne2(id)
+        dao_personne.dao_Personne().delete_personne2(id)
         page = "Personne supprimée.<br>"
         page = page + self.liste()
         return page

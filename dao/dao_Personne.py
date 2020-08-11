@@ -1,14 +1,16 @@
+#!/bin/env python
+# coding=utf-8
 import SQLiteManager as db
 from objects import personne as per
 
-class dao_Personne :
+class dao_Personne(object)  :
 
     #Constructeur
     def __init__(self):
         print("")
 
     #Renvoi l'identifiant suivant en incrémentant l'id max dans la table
-    def next_id(self):
+    def next_id_personne(self):
         base = db.SQLiteManager()
         cursor = base.connect()
         cursor.execute("SELECT MAX(id) FROM personnes")
@@ -17,6 +19,7 @@ class dao_Personne :
         if len(result) > 0 :
             max = result[0][0]
         base.close()
+        if max == None : max = 0
         return max + 1
 
 
@@ -34,7 +37,7 @@ class dao_Personne :
         return p
 
     #Renvoi la liste de toutes les personnes
-    def get_all(self) :
+    def get_all_personnes(self) :
         base = db.SQLiteManager()
         cursor = base.connect()
         cursor.execute("SELECT id, nom, prenom, date_de_naissance FROM personnes")
@@ -52,7 +55,7 @@ class dao_Personne :
     def insert_personne(self, pers) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        current_id = self.next_id()
+        current_id = self.next_id_personne()
         cursor.execute("INSERT INTO personnes VALUES (?,?,?,?)",(current_id, pers.get_nom(), pers.get_prenom(), pers.get_date_de_naiss()))
         base.close()
         return current_id
@@ -61,7 +64,7 @@ class dao_Personne :
     def insert_personne2(self, nom, prenom, date) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        current_id = self.next_id()
+        current_id = self.next_id_personne()
         cursor.execute("INSERT INTO personnes VALUES (?, ?, ?, ?)",(current_id, nom, prenom, date))
         base.close()
         return current_id
@@ -85,7 +88,7 @@ class dao_Personne :
     def delete_personne(self, pers):
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("DELETE FROM personnes WHERE id = ?",(pers.get_id()))
+        cursor.execute("DELETE FROM personnes WHERE id = ?", (pers.get_id()))
         base.close()
 
     #Supprime une personne dans la table personne

@@ -1,7 +1,9 @@
+#!/bin/env python
+# coding=utf-8
 import SQLiteManager as db
 from objects import acces as acc
 
-class dao_Acces :
+class dao_Acces(object) :
 
     #Constructeur
     def __init__(self):

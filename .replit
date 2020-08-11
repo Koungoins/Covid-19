@@ -1,2 +1,2 @@
-kharfflanguage = "bash"
+language = "bash"
 run = "python3.6 main.py"

@@ -1,12 +1,15 @@
+#!/bin/env python
+# coding=utf-8
+
 class Coordonnees:
-    
+
     #Constructeur de la classe Personne
     def __init__(self):
         self.id = -1
-        self.telephone = None
-        self.adresse_postale = None
-        self.adresse_mail = None
-        self.id_personne = None
+        self.telephone = ""
+        self.adresse_postale = ""
+        self.adresse_mail = ""
+        self.id_personne = -1
 
     #Saisir des coordonnées avec tout ses attributs d'un seul coup
     def set_coordonnees(self, id, telephone, adresse_postale, adresse_mail, id_personne):

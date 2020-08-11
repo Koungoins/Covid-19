@@ -1,21 +1,25 @@
+#!/bin/env python
+# coding=utf-8
 from dao import dao_medecin
+from dao import dao_personne
 from objects import medecin
+from objects import personne
 
-import cherrypy
+#import cherrypy
 
-class Pages_Medecins:
+class Pages_Medecins(object):
 
     def __init__(self):
         self.id_edite = -1
 
     #Page ajouter un médecin
-    @cherrypy.expose
+    #@cherrypy.expose
     def index(self):
         page = self.liste()
         return page
 
     #Formulaire pour ajouter un médecin
-    @cherrypy.expose
+    #@cherrypy.expose
     def ajouter(self):
         page = '''
         <title>Créer un nouveau médecin</title>
@@ -45,26 +49,26 @@ class Pages_Medecins:
 
 
     #Affiche la liste des medecins dans la base
-    @cherrypy.expose
+    #@cherrypy.expose
     def liste(self):
         page = "Les des personnes : <a href='ajouter'> Ajouter</a>"
-        liste = dao_Medecin.dao_Personne().get_all()
+        liste = dao_medecin.dao_Medecin().get_all_personnes()
         for c in liste :
             #page = page + "<br><a href='edit?id="+str(c.get_id())+">"+c.to_string()+"</a>"
             page = page + '<br>' + c.to_string() + '<a href="edit?id=' + str(c.get_id())+'">Editer</a>, <a href="supprimer?id=' + str(c.get_id()) + '">Supprimer</a>'
         return page
 
     #Enregistre les information saisie dans le formulaire et affiche la liste des personnes enregistrées
-    @cherrypy.expose
+    #@cherrypy.expose
     def enregistrer(self, nom_patient = "", prenom_patient = "", date_patient = -1):
-        p = Personne.Personne()
+        p = personne.Personne()
         p.set_nom(nom_patient)
         p.set_prenom(prenom_patient)
         p.set_date_de_naiss(date_patient)
         #Enregistrement et récupère l'id
-        id = dao_Personne.dao_Personne().insert_personne(p)
+        id = dao_personne.dao_Personne().insert_personne(p)
         #Recherche la personne dans la base
-        pliste = dao_Personne.dao_Personne().get_personne(id)
+        pliste = dao_personne.dao_Personne().get_personne(id)
         page ="Nouvelle personne : <br>"
         page = page + pliste.to_string()
         page = page + '''
@@ -73,11 +77,11 @@ class Pages_Medecins:
         return page
 
     #Formulaire permettant de modifier les infos d'une personne
-    @cherrypy.expose
+    #@cherrypy.expose
     def edit(self, id):
         self.id_edite = id
         page = "<h1>Edition d'une personne</h1>"
-        p = dao_Personne.dao_Personne().get_personne(id)
+        p = dao_personne.dao_Personne().get_personne(id)
         page = page + '''
         <form action="update" method="GET">
             <div>
@@ -94,24 +98,24 @@ class Pages_Medecins:
         return page
 
     #Met à jour les infos d'edition dans la base
-    @cherrypy.expose
+    #@cherrypy.expose
     def update(self, nom_patient, prenom_patient, date_patient):
-        p = Personne.Personne()
+        p = personne.Personne()
         p.set_id(self.id_edite)
         p.set_nom(nom_patient)
         p.set_prenom(prenom_patient)
         p.set_date_de_naiss(date_patient)
         #Enregistrement et récupère l'id
-        dao_Personne.dao_Personne().update_personne(p)
+        dao_personne.dao_Personne().update_personne(p)
         #Recherche la personne dans la base
-        pliste = dao_Personne.dao_Personne().get_personne(self.id_edite)
+        pliste = dao_personne.dao_Personne().get_personne(self.id_edite)
         page = pliste.to_string()
         return page
 
     #Supprime la personne dans la base
-    @cherrypy.expose
+    #@cherrypy.expose
     def supprimer(self, id):
-        dao_Personne.dao_Personne().delete_personne2(id)
+        dao_personne.dao_Personne().delete_personne2(id)
         page = "Personne supprimée.<br>"
         page = page + self.liste()
         return page

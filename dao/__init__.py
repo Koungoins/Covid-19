@@ -1,3 +1,5 @@
+#!/bin/env python
+# coding=utf-8
 import dao.dao_personne
 import dao.dao_acces
 import dao.dao_coordonnees

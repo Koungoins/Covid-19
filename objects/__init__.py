@@ -1,3 +1,5 @@
+#!/bin/env python
+# coding=utf-8
 import objects.personne
 import objects.acces
 import objects.coordonnees
