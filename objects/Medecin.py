@@ -26,7 +26,7 @@ class Medecin(personne.Personne):
 
     #Affichage
     def to_string(self) :
-        return super().to_string() + str(self.liberal) + ", " + self.hopital+ ", "+ str(self.rpps)
+        return super().to_string() +", "+str(self.id_personne)+ ", "+ str(self.liberal) + ", " + self.hopital+ ", "+ str(self.rpps)
 
     #Les SETTER permettent de saisirs les valeurs des attributs proprement
     def set_liberal(self, liberal) :

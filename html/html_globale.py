@@ -23,7 +23,7 @@ class Page_Globale(object) :
             #</div>'''
             page = ""
         else :
-            page = page +  model_global.get_user_nom() + " " + model_global.get_user_prenom()
+            page = page +  "Bonjour " + model_global.get_user_nom() + " " + model_global.get_user_prenom()
             page = page +  '''<div><form action="deconnexion" methode="GET">
                     <input type="submit" value="Déconnexion">
                 </form></div>'''
@@ -55,5 +55,9 @@ class Page_Globale(object) :
 
     def deconnexion(self) :
         model_global.deconnect_user()
+        return self.vers_accueil()
+    deconnexion.exposed = True
+
+    def vers_accueil(self):
         return '<head><meta http-equiv="refresh" content="0;URL=/accueil/"></head>'
     deconnexion.exposed = True
