@@ -9,6 +9,7 @@ class dao_Acces(object) :
     def __init__(self):
         print("")
 
+
     #Renvoi l'identifiant suivant en incrémentant l'id max dans la table
     def next_id(self):
         base = db.SQLiteManager()

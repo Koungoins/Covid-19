@@ -1,0 +1,11 @@
+body {
+    background-color: lightgrey;
+}
+
+
+.box {
+    width: 200px;
+    position: center;
+    background-color: red;
+    border-radius: 30%;
+}

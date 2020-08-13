@@ -13,6 +13,26 @@ class dao_Patient(dao_personne.dao_Personne) :
     def __init__(self):
         print("")
 
+
+    #Recherche si les acces existe
+    def connexion(self, login, passe):
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        sql  =  '''SELECT pat.id, pat.nss, pat.id_personne, pat.id_medecin
+        FROM patients AS pat
+        JOIN personnes AS pers ON pat.id_personne = pers.id
+        JOIN acces AS acc ON acc.id_personne = pers.id '''
+        sql = sql + "WHERE acc.login LIKE '"+login+"' AND acc.mot_de_passe LIKE '"+passe+"'"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        base.close()
+        if len(result) > 0 :
+            ac = patient.Patient()
+            ac.set_patient2(result[0][0], result[0][1], result[0][2], result[0][3])
+            return ac
+        else:
+            return None
+
     #Renvoi l'identifiant suivant en incrémentant l'id max dans la table
     def next_id_patient(self):
         base = db.SQLiteManager()

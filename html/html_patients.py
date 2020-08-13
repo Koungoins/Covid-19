@@ -1,23 +1,43 @@
 #!/bin/env python
 # coding=utf-8
-from dao import dao_patient
-from objects import patient
-
 import cherrypy
 
-class Pages_Patients(object) :
+from dao import dao_patient
+from dao import dao_personne
+from objects import patient
+from objects import personne
+from html import html_globale
+import model_global
+
+
+#class Page_ConnexionPatient(html_connexion.Page_Connexion):
+
+class Pages_Patients(html_globale.Page_Globale) :
 
     def __init__(self):
-        self.id_edite = -1
+        self.titre_page = "Espace patients"
 
-    #Page ajouter un patient
-    @cherrypy.expose
     def index(self):
-        page = self.liste()
-        return page
+        return self.connexion("Espace patients")
+    index.exposed = True
+
+    def verif_connexion(self, login, passe) :
+        patient = dao_patient.dao_Patient().connexion(login, passe)
+        if patient == None :
+            return super().connexion(self.titre_page) + "<div class='message_erreur'>Veuillez vérifier vous accès !</div>"
+        else :
+            pers = dao_personne.dao_Personne().get_personne(patient.get_id_personne())
+            #Stockage dans la session
+            model_global.connect_user(model_global.user_type_patient, patient.get_id(), pers.get_nom(), pers.get_prenom(), pers.get_id())
+            #Affichage de l'accueil patient connecté
+            page = super().header()
+            page = page + "Bonjour " + pers.get_nom() + " " + pers.get_prenom()
+            page = page + "<br>Vous êtes connecté !"
+            page = page + super().footer()
+            return page
+    verif_connexion.exposed = True
 
     #Formulaire pour ajouter un patient
-    @cherrypy.expose
     def ajouter(self):
         page = '''
         <title>Créer un nouveau patient</title>
@@ -37,20 +57,20 @@ class Pages_Patients(object) :
         </form>
         '''
         return page
+    ajouter.exposed = True
 
 
     #Affiche la liste des medecins dans la base
-    @cherrypy.expose
     def liste(self):
         page = "Les des patients : <a href='ajouter'> Ajouter</a>"
         liste = dao_patient.dao_Patient().get_all_patients()
         for c in liste :
             #page = page + "<br><a href='edit?id="+str(c.get_id())+">"+c.to_string()+"</a>"
-            page = page + '<br>' + c.to_string() + '<a href="edit?id=' + str(c.get_id())+'">Editer</a>, <a href="supprimer?id=' + str(c.get_id()) + '">Supprimer</a>'
+            page = page + '<br>' + c.to_string() + '<a href="edit?id=' + str(c.get_id())+'">Editer</a>'
         return page
+    liste.exposed = True
 
     #Enregistre les information saisie dans le formulaire et affiche la liste des personnes enregistrées
-    @cherrypy.expose
     def enregistrer(self, nom_patient, prenom_patient, date_patient, nss):
         p = patient.Patient()
         p.set_nom(nom_patient)
@@ -67,9 +87,9 @@ class Pages_Patients(object) :
         <form action="liste"><input type="submit" value="Liste des patients"></form>
         '''
         return page
+    enregistrer.exposed = True
 
     #Formulaire permettant de modifier les infos d'une personne
-    @cherrypy.expose
     def edit(self, id):
         self.id_edite = id
         page = "<h1>Edition d'une personne</h1>"
@@ -90,9 +110,9 @@ class Pages_Patients(object) :
         </form>
         '''
         return page
+    edit.exposed = True
 
     #Met à jour les infos d'edition dans la base
-    @cherrypy.expose
     def update(self, nom_patient, prenom_patient, date_patient):
         p = personne.Personne()
         p.set_id(self.id_edite)
@@ -105,11 +125,12 @@ class Pages_Patients(object) :
         pliste = dao_personne.dao_Personne().get_personne(self.id_edite)
         page = pliste.to_string()
         return page
+    update.exposed = True
 
     #Supprime la personne dans la base
-    @cherrypy.expose
     def supprimer(self, id):
         dao_personne.dao_Personne().delete_personne2(id)
         page = "Personne supprimée.<br>"
         page = page + self.liste()
         return page
+    supprimer.exposed = True
