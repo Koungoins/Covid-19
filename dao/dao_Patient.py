@@ -51,7 +51,7 @@ class dao_Patient(dao_personne.dao_Personne) :
     def get_patient(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, nss, id_personne FROM patients WHERE id = "+str(id))
+        cursor.execute("SELECT id, nss, id_personne, id_medecin FROM patients WHERE id = " + str(id))
         result = cursor.fetchall()
         p = None
         if len(result) > 0 :
@@ -59,6 +59,7 @@ class dao_Patient(dao_personne.dao_Personne) :
             p.set_id(result[0][0])
             p.set_nss(result[0][1])
             p.set_id_personne(result[0][2])
+            p.set_id_medecin(result[0][3])
         base.close()
         pers = super().get_personne(p.get_id_personne())
         p.set_nom(pers.get_nom())
@@ -70,18 +71,16 @@ class dao_Patient(dao_personne.dao_Personne) :
     def get_all_patients(self) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, nss, id_personne FROM patients")
+        cursor.execute('''SELECT pat.id, pat.id_personne, pers.nom, pers.prenom, pers.date_de_naissance, pat.nss, pat.id_medecin
+                        FROM patients AS pat
+                        JOIN personnes AS pers ON pers.id = pat.id_personne''')
         result = cursor.fetchall()
         p = []
         pcur = None
         for cur in result :
+            #id_patient, id_personne, nom, prenom, daten, nss, id_medecin
             pcur = patient.Patient()
-            pcur.set_id(cur[0])
-            pcur.set_nss(cur[1])
-            pcur.set_id_personne(cur[2])
-            #Recherche des infos personnes
-            per = dao_personne.dao_Personne().get_personne(pcur.get_id_personne())
-            pcur.set_personne(per.get_id(), per.get_nom(), per.get_prenom(), per.get_date_de_naiss())
+            pcur.set_patient(cur[0], cur[1], cur[2], cur[3], cur[4], cur[5], cur[6])
             p.append(pcur)
         base.close()
         return p
@@ -92,7 +91,8 @@ class dao_Patient(dao_personne.dao_Personne) :
         base = db.SQLiteManager()
         cursor = base.connect()
         current_id = self.next_id_patient()
-        cursor.execute("INSERT INTO patients(id, nss, id_personne) VALUES (?,?,?)",(current_id, pat.get_nss(), id_pers))
+        cursor.execute("INSERT INTO patients (id, nss, id_personne, id_medecin) VALUES (?, ?, ?, ?)",
+        (current_id, pat.get_nss(), id_pers, pat.get_id_medecin()))
         base.close()
         return current_id
 

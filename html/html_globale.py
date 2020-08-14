@@ -23,7 +23,7 @@ class Page_Globale(object) :
             #</div>'''
             page = ""
         else :
-            page = page +  "Bonjour " + model_global.get_user_nom() + " " + model_global.get_user_prenom()
+            page = page + str(model_global.get_user_id())  +" Bonjour " + model_global.get_user_nom() + " " + model_global.get_user_prenom()
             page = page +  '''<div><form action="deconnexion" methode="GET">
                     <input type="submit" value="Déconnexion">
                 </form></div>'''

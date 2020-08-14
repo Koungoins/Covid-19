@@ -30,19 +30,19 @@ def deconnect_user():
     cherrypy.session[user_id_personne] = None
 
 def get_user_type():
-    return cherrypy.session.get(user_type, "None")
+    return cherrypy.session.get(user_type, None)
 
 def get_user_id():
-    return cherrypy.session.get(user_id, -1)
+    return cherrypy.session.get(user_id, None)
 
 def get_user_nom():
-    return cherrypy.session.get(user_nom, "None")
+    return cherrypy.session.get(user_nom, None)
 
 def get_user_prenom():
-    return cherrypy.session.get(user_prenom, "None")
+    return cherrypy.session.get(user_prenom, None)
 
 def get_user_id_personne():
-    return cherrypy.session.get(user_id_personne, -1)
+    return cherrypy.session.get(user_id_personne, None)
 
 def is_user_connected():
     return cherrypy.session.get(user_connected, False)

@@ -36,8 +36,8 @@ class Patient(personne.Personne):
     def set_id_personne(self, id_personne) :
         self.id_personne = id_personne
 
-    def set_id_medecin(self, id_personne) :
-        self.id_medecin = id_personne
+    def set_id_medecin(self, id_medecin) :
+        self.id_medecin = id_medecin
 
     #Les GETTER permettent de récupérer les valeurs des attributs proprement
     def get_nss(self) :

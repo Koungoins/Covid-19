@@ -13,9 +13,18 @@ class SQLiteManager(object):
     def connect(self) :
         return self.cursor
 
-    def close(self) :
+    def commit(self) :
         self.connexion.commit()
+
+    def cursor_close(self) :
+        self.connexion.commit()
+
+    def connexion_close(self) :
+        self.connexion.commit()
+
+    def close(self) :
         self.cursor.close()
+        self.connexion.commit()
         self.connexion.close()
 
     def init_data_base(self):

@@ -37,58 +37,6 @@ class Pages_Patients(html_globale.Page_Globale) :
             return page
     verif_connexion.exposed = True
 
-    #Formulaire pour ajouter un patient
-    def ajouter(self):
-        page = '''
-        <title>Créer un nouveau patient</title>
-        <h1>Créer un nouveau patient</h1>
-        <form action="enregistrer" method="GET">
-            <div>
-                <label for="nom">Nom:</label>
-                <input type="text" id="nom" name="nom_patient"><br>
-                <label for="prenom">Prénom:</label>
-                <input type="text" id="prenom" name="prenom_patient"><br>
-                <label for="dateN">Date de naissance:</label>
-                <input type="date" id="dateN" name="date_patient"><br>
-                <label for="nss">Numéro de Sécurité Sociale:</label>
-                <input type="number" id="nss" name="nss"><br>
-                <input type="submit" value="Enregistrer">
-            </div>
-        </form>
-        '''
-        return page
-    ajouter.exposed = True
-
-
-    #Affiche la liste des medecins dans la base
-    def liste(self):
-        page = "Les des patients : <a href='ajouter'> Ajouter</a>"
-        liste = dao_patient.dao_Patient().get_all_patients()
-        for c in liste :
-            #page = page + "<br><a href='edit?id="+str(c.get_id())+">"+c.to_string()+"</a>"
-            page = page + '<br>' + c.to_string() + '<a href="edit?id=' + str(c.get_id())+'">Editer</a>'
-        return page
-    liste.exposed = True
-
-    #Enregistre les information saisie dans le formulaire et affiche la liste des personnes enregistrées
-    def enregistrer(self, nom_patient, prenom_patient, date_patient, nss):
-        p = patient.Patient()
-        p.set_nom(nom_patient)
-        p.set_prenom(prenom_patient)
-        p.set_date_de_naiss(date_patient)
-        p.set_nss(nss)
-        #Enregistrement et récupère l'id
-        id = dao_patient.dao_Patient().insert_patient(p)
-        #Recherche la personne dans la base
-        pliste = dao_patient.dao_Patient().get_patient(id)
-        page ="Nouveau patient : <br>"
-        page = page + pliste.to_string()
-        page = page + '''
-        <form action="liste"><input type="submit" value="Liste des patients"></form>
-        '''
-        return page
-    enregistrer.exposed = True
-
     #Formulaire permettant de modifier les infos d'une personne
     def edit(self, id):
         self.id_edite = id
