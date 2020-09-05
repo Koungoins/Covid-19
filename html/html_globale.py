@@ -1,7 +1,7 @@
 #!/bin/env python
 # coding=utf-8
 
-import cherrypy
+#import cherrypy
 import model_global
 
 class Page_Globale(object) :

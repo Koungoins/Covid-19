@@ -32,8 +32,8 @@ class Medecin(personne.Personne):
     def set_liberal(self, liberal) :
         self.liberal = liberal
 
-    def set_hopital(self, nom) :
-        self.hopital = nom
+    def set_hopital(self, hopital) :
+        self.hopital = hopital
 
     def set_id_personne(self, id_personne) :
         self.id_personne = id_personne

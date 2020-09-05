@@ -21,6 +21,7 @@ from objects import medecin
 from html import html_medecins
 from html import html_patients
 from html import html_globale
+from html import html_questions
 
 class Accueil(html_globale.Page_Globale):
 
@@ -43,6 +44,7 @@ root = Accueil()
 #lien vers les pages dans les classes
 root.patients = html_patients.Pages_Patients()
 root.medecins = html_medecins.Pages_Medecins()
+#root.questions = html_questions.Pages_Questions()
 root.accueil = Accueil()
 
 config_serveur = os.path.join(os.path.dirname(__file__), 'serveur_web.conf')
@@ -66,28 +68,3 @@ if __name__ == '__main__' :
     #db.SQLiteManager().init_data_base()
     cherrypy.quickstart(root, '/', config)
 
-
-#med = medecin.Medecin()
-#med.set_nom("CHEVALIER")
-#med.set_prenom("Jean Pierre")
-#med.set_date_de_naiss('1965-05-25')
-#med.set_liberal(False)
-#med.set_hopital("CHM Mamoudzou")
-#id = dao_medecin.dao_Medecin().insert_medecin(med)
-#print("Nouveau:"+str(id))
-
-coord = coordonnees.Coordonnees()
-coord.set_adresse_mail("mail@gmail.com")
-coord.set_telephone("0125368541")
-coord.set_adresse_postale("Mayotte")
-coord.set_id_personne(52)
-#id = dao_coordonnees.dao_Coordonnees().insert_coordonnees(coord)
-#id = dao_coordonnees.dao_Coordonnees().insert_coordonnees2(coord.get_telephone(), coord.get_adresse_postale(), coord.get_adresse_mail(), coord.get_id_personne())
-#print("Nouveau:"+str(id))
-
-acc = acces.Acces()
-acc.set_login("perso")
-acc.set_mot_de_passe("motdepasse")
-acc.set_id_personne(17)
-#id = dao_acces.dao_Acces().insert_acces(acc)
-#print("Nouveau:"+str(id))

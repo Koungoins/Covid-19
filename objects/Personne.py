@@ -9,7 +9,7 @@ class Personne:
         self.id = -1
         self.nom = ""
         self.prenom = ""
-        self.date_de_naiss = -1
+        self.date_de_naiss = ""
         self.coordonnees = None
 
     #Saisir une personne avec tout ses attributs d'un seul coup
