@@ -63,9 +63,9 @@ class Pages_Patients(html_globale.Page_Globale) :
                 Espace personnel
             </legend>'''
         page = page + '''<ul>
-        <li><a href="evolution_patient">Voir mon évolution</a></li>
-        <li><a href="questionnaire_patient">Questionnaire</a></li>
-        <li><a href="edition_patient">Modifier mes informations personnelles</a></li>
+        <li class="button_vert"><a href="evolution_patient">Voir mon évolution</a></li>
+        <li class="button_vert"><a href="questionnaire_patient">Questionnaire</a></li>
+        <li class="button_vert"><a href="edition_patient">Modifier mes informations personnelles</a></li>
         </ul></fieldset>'''
         page = page + super().footer()
         return page
@@ -307,8 +307,6 @@ class Pages_Patients(html_globale.Page_Globale) :
                 <div class="button_selected"><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div>
             </div>
             <div class="liste_questions">'''
-
-        page = page + "<div>"
         count = 0
         for i in range(len(self.liste_sympt_graves)) :
             c = self.liste_sympt_graves[i]
@@ -345,13 +343,10 @@ class Pages_Patients(html_globale.Page_Globale) :
             page = page + "Commentaire : " + self.questionnaire_jour.get_commentaire() + ' <a href="questions_sympt_graves?edit=1000">'
             page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
 
-
-
-        page = page + "</div>"
         page = page + " </div>"
-        page = page + '<div class="bouton_bas"><div class="button_preced"><div><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>'
-        page = page + '<div class="button_suiv"><a href="valider_questionnaire">VALIDER</a></div></div>'
-        page = page + '</div></div></fieldset>'
+        page = page + '<div class="bouton_bas"><div class="button_preced"><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>'
+        page = page + '<div class="button_suiv"><a href="valider_questionnaire">VALIDER</a></div>'
+        page = page + '</div></fieldset>'
         page = page + super().footer()
         return page
     questions_sympt_graves.exposed = True

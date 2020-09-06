@@ -85,7 +85,7 @@ legend {
     width: 200px;
     height: 40px;
 	float:center;
-    background: linear-gradient(to bottom, #adb6d6ea 0%,#8d99c0 100%);
+    background: linear-gradient(to bottom, #edeef3ea 0%,#ffffff 100%);
     border: none;
     border-radius: 5px;
     position: relative;
@@ -102,6 +102,7 @@ legend {
 
     display: auto;
     margin: 0 auto;
+    margin-top: 10px;
   }
 
 .button_suiv {
