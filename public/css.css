@@ -1,11 +1,112 @@
+
 body {
-    background: url(white-sand.png);
+    /*background: url(white-sand.png);*/
+    /*background-color : light-grey;*/
 }
 
+.entete_connexion {
+	width: 300px;
+	float: right;
+}
 
 .box {
-    width: 200px;
-    position: center;
-    background-color: red;
+    width: 600px;
+	margin: 0 auto;
+    background-color: white;
     border-radius: 30%;
 }
+
+fieldset {
+    background-color: #ffffff;
+    margin: 0 auto 15px auto;
+    padding: 10px;
+    border: 2px solid #eeab69;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    behavior: url(border-radius.htc);
+
+    background-image: -moz-linear-gradient(top, #ffffff, #f4f4f4);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#f4f4f4));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff,endColorstr=#f4f4f4);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff,endColorstr=#f4f4f4)";
+}
+
+legend {
+    color: #eeab69;
+}
+
+.cadre {
+	margin-top: 100px;
+}
+
+.connexion{
+	width: 300px;
+}
+
+.rubriques {
+    width: 550px;
+    height: 70px;
+	float: center;
+}
+
+.bouton_bas {
+    width: 550px;
+    float:center;
+    height: 50px;
+}
+
+.liste_questions {
+	width: 550px;
+	float: center;	
+}
+
+.liste_questions img {
+	width: 20px;
+}
+
+.rubriques .button {
+    width: 130px;
+    height: 40px;
+	float:left;	
+    background: linear-gradient(to bottom, #edeef3ea 0%,#ffffff 100%);
+    border: none;
+    border-radius: 5px;
+    position: relative;
+    /*border-bottom: 4px solid #8d99c0;*/
+    color: #fbfbfb;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+    font-size: 15px;
+    text-align: center;
+    text-indent: 5px;
+    box-shadow: 0px 3px 0px 0px rgba(0,0,0,.2);
+    cursor: pointer;
+
+    display: auto;
+    margin-left: 3px;
+  }
+
+.rubriques .button_selected {
+    width: 130px;
+    height: 40px;
+	float:left;	
+    background: linear-gradient(to bottom, #edeef3ea 0%,#ffffff 100%);
+    border: none;
+    border-radius: 5px;
+    position: relative;
+    border-bottom: 4px solid #eb4908;
+    color: #eb4908;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+    font-size: 15px;
+    text-align: center;
+    text-indent: 5px;
+    box-shadow: 0px 3px 0px 0px rgba(0,0,0,.2);
+    cursor: pointer;
+
+    display: auto;
+    margin-left : 3px;
+  }

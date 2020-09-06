@@ -8,14 +8,16 @@ class Questionnaire:
         self.id = -1
         self.date = None
         self.heure = None
-        self.id_patient = None
+        self.id_patient = -1
+        self.commentaire = ""
 
     #Saisir un acces avec tout ses attributs d'un seul coup
-    def set_questionnaire(self, id, date, heure, id_patient):
+    def set_questionnaire(self, id, date, heure, id_patient, commentaire):
         self.id = id
         self.date = date
         self.heure = heure
         self.id_patient = id_patient
+        self.commentaire = commentaire
 
     #Affichage
     def to_string(self) :
@@ -34,6 +36,9 @@ class Questionnaire:
     def set_id_patient(self, id_patient) :
         self.id_patient = id_patient
 
+    def set_commentaire(self, commentaire) :
+        self.commentaire = commentaire
+
     #Les GETTER permettent de récupérer les valeurs des attributs proprement
     def get_id(self) :
         return self.id
@@ -46,3 +51,6 @@ class Questionnaire:
 
     def get_id_patient(self) :
         return self.id_patient
+
+    def get_commentaire(self) :
+        return self.commentaire

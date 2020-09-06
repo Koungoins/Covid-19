@@ -26,32 +26,48 @@ class dao_Questionnaire(object)  :
     def get_questionnaire(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, date_q, heure, id_patient FROM questionnaires WHERE id = " + str(id))
+        cursor.execute("SELECT id, date_q, heure, id_patient, commentaire FROM questionnaires WHERE id = " + str(id))
         result = cursor.fetchall()
         p = None
         if len(result) > 0 :
             p = per.Questionnaire()
-            #p.set_question(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4])
+            p.set_questionnaire(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4])
         base.close()
         return p
 
-    #Crée une nouvelle personne dans la table personne à l'aide des infos contenues dans l'objet Personne en argument
+    def get_last_questionnaire(self, id_patient) :
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        cursor.execute('''SELECT id, date_q, heure, id_patient, commentaire
+                        FROM questionnaires
+                        WHERE  id_patient = '''+ str(id_patient)+''' 
+                        AND id=(SELECT MAX(id) FROM questionnaires WHERE id_patient = '''+ str(id_patient)+''')''')
+        result = cursor.fetchall()
+        p = None
+        if len(result) > 0 :
+            p = per.Questionnaire()
+            p.set_questionnaire(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4])
+        base.close()
+        return p
+
+
+    #Crée une nouveau questionnaire dans la table questionnaires à l'aide des infos contenues dans l'objet Questionnaire en argument
     def insert_questionnaire(self, pers) :
         base = db.SQLiteManager()
         cursor = base.connect()
         current_id = self.next_id_questionnaire()
-        cursor.execute("INSERT INTO questionnaires (id, date_q, heure, id_patient) VALUES (?, ?, ?, ?)",
-        (current_id, pers.get_date(), pers.get_heure(), pers.get_id_patient()))
+        cursor.execute("INSERT INTO questionnaires (id, date_q, heure, id_patient, commentaire) VALUES (?, ?, ?, ?, ?)",
+        (current_id, pers.get_date(), pers.get_heure(), pers.get_id_patient(), pers.get_commentaire()))
         base.close()
         return current_id
 
     #Crée une nouvelle personne dans la table personne à l'aide des infos en argument
-    def insert_questionnaire2(self, intitule, description, valeur, niveau) :
+    def insert_questionnaire2(self, intitule, description, valeur, niveau, commentaire) :
         base = db.SQLiteManager()
         cursor = base.connect()
         current_id = self.next_id_questionnaire()
-        cursor.execute("INSERT INTO questions (id, intitule, description_q, valeur, niveau) VALUES (?, ?, ?, ?, ?)",
-        (current_id, intitule, description, valeur, niveau))
+        cursor.execute("INSERT INTO questions (id, intitule, description_q, valeur, niveau, commentaire) VALUES (?, ?, ?, ?, ?, ?)",
+        (current_id, intitule, description, valeur, niveau, commentaire))
         base.close()
         return current_id
 

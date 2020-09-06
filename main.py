@@ -26,15 +26,21 @@ from html import html_questions
 class Accueil(html_globale.Page_Globale):
 
     def index(self):
-        yield html_globale.Page_Globale().header()
-        yield ''' <h1>Page d'accueil</h1>
+        page = super().entete()
+        page = page + '''<div class="box">
+           <div>
+        <fieldset class="cadre">
+        <legend>
+            Page d'accueil
+        </legend>
         <div>
-            <div><a href="/patients/">Espace patients</a></div>
-            <div><a href="/medecins/">Espace médecins</a></div>
+            <div class="button_vert"><a href="/patients/">Espace patients</a></div>
+            <div class="button_vert"><a href="/medecins/">Espace médecins</a></div>
         </div>
+        </fieldset></div>
         '''
-        yield super().footer()
-
+        page = page + super().footer()
+        return page
     index.exposed = True
 
 

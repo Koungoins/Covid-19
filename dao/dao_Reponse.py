@@ -35,6 +35,25 @@ class dao_Reponse(object)  :
         base.close()
         return p
 
+    def get_last_reponse_patient(self, id_patient, niveau) :
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        cursor.execute('''SELECT rep.reponse, rep.id_question 
+                        FROM reponses AS rep
+                        JOIN questions AS qu ON rep.id_question = qu.id
+                        JOIN questionnaires AS quest ON rep.id_questionnaire = quest.id
+                        WHERE  quest.id_patient = ''' + str(id_patient) + ''' AND qu.niveau = ''' + str(niveau) + ''' AND 
+                        quest.id=(SELECT MAX(id) FROM questionnaires WHERE id_patient = ''' + str(id_patient) + ''')''')
+        result = cursor.fetchall()
+        p = []
+        pcur = None
+        for cur in result :
+            pcur = per.Reponse()
+            pcur.set_reponse(cur[0])
+            pcur.set_id_question(cur[1])
+            p.append(pcur)
+        base.close()
+        return p
 
     def get_all_reponses(self) :
         base = db.SQLiteManager()

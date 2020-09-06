@@ -34,6 +34,7 @@ class Pages_Patients(html_globale.Page_Globale) :
         self.reponses_sympt_graves = []
         self.date = ""
         self.date_time_quest = None
+        self.questionnaire_jour = questionnaire.Questionnaire()
 
 
     def index(self):
@@ -49,55 +50,85 @@ class Pages_Patients(html_globale.Page_Globale) :
             #Stockage dans la session
             model_global.connect_user(model_global.user_type_patient, patient.get_id(), pers.get_nom(), pers.get_prenom(), pers.get_id())
             #Affichage de l'accueil patient connecté
-            page = super().header()
-            page = page + '''<ul>
-            <li><a href="evolution_patient">Voir mon évolution</a></li>
-            <li><a href="questionnaire_patient">Questionnaire</a></li>
-            <li><a href="edition_patient">Modifier mes informations personnelles</a></li>
-            </ul>'''
             self.date_time_quest = gmtime()
-            page = page + super().footer()
+            page = self.accueil_patient()
         return page
     verif_connexion.exposed = True
 
+
+    def accueil_patient(self):
+        page = super().header()
+        page = page + '''<fieldset class="cadre">
+            <legend>
+                Espace personnel
+            </legend>'''
+        page = page + '''<ul>
+        <li><a href="evolution_patient">Voir mon évolution</a></li>
+        <li><a href="questionnaire_patient">Questionnaire</a></li>
+        <li><a href="edition_patient">Modifier mes informations personnelles</a></li>
+        </ul></fieldset>'''
+        page = page + super().footer()
+        return page
+    accueil_patient.exposed = True
+
+
     #Construit les listes de réponses pour stoquer les saisies du patient avant d'enregistrer dans la base
     def init_listes_questions(self):
-        rep = None
         #Les paramêtres
         self.liste_parametres = dao_question.dao_Question().get_questions_niveau(0)
-        self.reponses_parametres = []
-        for quest in self.liste_parametres :
-            rep = reponse.Reponse()
-            rep.set_id_question(quest.get_id())
-            rep.set_reponse(quest.get_valeur())
-            self.reponses_parametres.append(rep)
+        id_patient = model_global.get_user_id()
+
+        self.reponses_parametres = dao_reponse.dao_Reponse().get_last_reponse_patient(id_patient, 0)
+        if len(self.reponses_parametres) == 0 :
+            self.liste_parametres = dao_question.dao_Question().get_questions_niveau(0)
+            self.reponses_parametres = []
+            for quest in self.liste_parametres :
+                rep = reponse.Reponse()
+                rep.set_id_question(quest.get_id())
+                rep.set_reponse(quest.get_valeur())
+                self.reponses_parametres.append(rep)
 
         #Symptomes fréquents
         self.liste_sympt_frequents = dao_question.dao_Question().get_questions_niveau(1)
-        self.reponses_sympt_frequents = []
-        for quest in self.liste_sympt_frequents :
-            rep = reponse.Reponse()
-            rep.set_id_question(quest.get_id())
-            rep.set_reponse(quest.get_valeur())
-            self.reponses_sympt_frequents.append(rep)
+        self.reponses_sympt_frequents = dao_reponse.dao_Reponse().get_last_reponse_patient(id_patient, 1)
+        if len(self.reponses_sympt_frequents) == 0 :
+            self.liste_sympt_frequents = dao_question.dao_Question().get_questions_niveau(1)
+            self.reponses_sympt_frequents = []
+            for quest in self.liste_sympt_frequents :
+                rep = reponse.Reponse()
+                rep.set_id_question(quest.get_id())
+                rep.set_reponse(quest.get_valeur())
+                self.reponses_sympt_frequents.append(rep)
 
         #Symptomes moins fréquents
         self.liste_sympt_moins_frequents = dao_question.dao_Question().get_questions_niveau(2)
-        self.reponses_sympt_moins_frequents = []
-        for quest in self.liste_sympt_moins_frequents :
-            rep = reponse.Reponse()
-            rep.set_id_question(quest.get_id())
-            rep.set_reponse(quest.get_valeur())
-            self.reponses_sympt_moins_frequents.append(rep)
+        self.reponses_sympt_moins_frequents = dao_reponse.dao_Reponse().get_last_reponse_patient(id_patient, 2)
+        if len(self.reponses_sympt_moins_frequents) == 0 :
+            self.liste_sympt_moins_frequents = dao_question.dao_Question().get_questions_niveau(2)
+            self.reponses_sympt_moins_frequents = []
+            for quest in self.liste_sympt_moins_frequents :
+                rep = reponse.Reponse()
+                rep.set_id_question(quest.get_id())
+                rep.set_reponse(quest.get_valeur())
+                self.reponses_sympt_moins_frequents.append(rep)
 
         #Symptomes graves
         self.liste_sympt_graves = dao_question.dao_Question().get_questions_niveau(3)
-        self.reponses_sympt_graves = []
-        for quest in self.liste_sympt_graves :
-            rep = reponse.Reponse()
-            rep.set_id_question(quest.get_id())
-            rep.set_reponse(quest.get_valeur())
-            self.reponses_sympt_graves.append(rep)
+        self.reponses_sympt_graves = dao_reponse.dao_Reponse().get_last_reponse_patient(id_patient, 3)
+        if len(self.reponses_sympt_graves) == 0 :
+            self.liste_sympt_graves = dao_question.dao_Question().get_questions_niveau(3)
+            self.reponses_sympt_graves = []
+            for quest in self.liste_sympt_graves :
+                rep = reponse.Reponse()
+                rep.set_id_question(quest.get_id())
+                rep.set_reponse(quest.get_valeur())
+                self.reponses_sympt_graves.append(rep)
+
+        #Commentaire
+        quest = dao_questionnaire.dao_Questionnaire().get_last_questionnaire(id_patient)
+        if not (quest == None) :
+            self.questionnaire_jour.set_commentaire(quest.get_commentaire())
+
     init_listes_questions.exposed = True
 
     #Affcihe le questionnaire du jour
@@ -105,6 +136,11 @@ class Pages_Patients(html_globale.Page_Globale) :
         self.init_listes_questions()
         self.date = strftime("%d / %m / %Y à %Hh%M", self.date_time_quest)
         self.rubrique = 0
+        dateQ = strftime("%Y-%m-%d", self.date_time_quest)
+        heureQ = strftime("%H:%M", self.date_time_quest)
+        self.questionnaire_jour.set_date(dateQ)
+        self.questionnaire_jour.set_heure(heureQ)
+
         page = self.affiche_rubrique_courant()
         return page
     questionnaire_patient.exposed = True
@@ -113,13 +149,16 @@ class Pages_Patients(html_globale.Page_Globale) :
     def questions_parametres(self, rubrique = 0, edit = -1):
         self.rubrique = rubrique
         page = super().header()
-        page = page + "<h1>Questionnaire du jour : " + self.date + "</h1> "
+        page = page + '''<fieldset class="cadre">
+        <legend>
+            Questionnaire du jour : ''' + self.date + '''
+        </legend>'''
         page = page + '''<div>
                     <div class="rubriques">
-                        <div><a href="questions_parametres?rubrique=0">+Paramêtres</a></div>
-                        <div><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div>
-                        <div><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>
-                        <div><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div>
+                        <div class="button_selected"><a href="questions_parametres?rubrique=0">Paramêtres</a></div>
+                        <div class="button"><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div>
+                        <div class="button"><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>
+                        <div class="button"><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div>
                     </div>
                     <div class="liste_questions">'''
 
@@ -144,12 +183,12 @@ class Pages_Patients(html_globale.Page_Globale) :
             else :
                 #mode affichage
                 page = page + c.get_intitule() + " : " + rep.get_reponse() + ' <a href="questions_parametres?edit=' + str(count) + '">'
-                page = page +'<img src="./image_edit.jpg" alt="Edit"/></a><br>'
+                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
             count = count + 1
 
         page = page + "</div>"
         page = page + " </div>"
-        page = page + '<div><div><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div></div></div>'
+        page = page + '<div class="bouton_bas"><div class="button_suiv"><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div></div></div></fieldset>'
         page = page + super().footer()
         return page
     questions_parametres.exposed = True
@@ -158,15 +197,18 @@ class Pages_Patients(html_globale.Page_Globale) :
     def questions_sympt_frequents(self, rubrique = 1, edit = -1):
         self.rubrique = rubrique
         page = super().header()
-        page = page + "<h1>Questionnaire du jour : " + self.date + "</h1> "
+        page = page + '''<fieldset class="cadre">
+        <legend>
+            Questionnaire du jour : ''' + self.date + '''
+        </legend>'''
         page = page + '''<div>
-                    <div class="rubriques">
-                        <div><a href="questions_parametres?rubrique=0">Paramêtres</a></div>
-                        <div><a href="questions_sympt_frequents?rubrique=1">+Symptômes fréquents</a></div>
-                        <div><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>
-                        <div><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div>
-                    </div>
-                    <div class="liste_questions">'''
+            <div class="rubriques">
+                <div class="button"><a href="questions_parametres?rubrique=0">Paramêtres</a></div>
+                <div class="button_selected"><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div>
+                <div class="button"><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>
+                <div class="button"><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div>
+            </div>
+            <div class="liste_questions">'''
 
         page = page + "<div>"
         count = 0
@@ -189,12 +231,13 @@ class Pages_Patients(html_globale.Page_Globale) :
             else :
                 #mode affichage
                 page = page + c.get_intitule() + " : " + rep.get_reponse() + ' <a href="questions_sympt_frequents?edit=' + str(count) + '">'
-                page = page +'<img src="./image_edit.jpg" alt="Edit"/></a><br>'
+                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
             count = count + 1
 
         page = page + "</div>"
         page = page + " </div>"
-        page = page + '<div><div><a href="questions_parametres?rubrique=0">Paramêtres</a></div><div><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div></div></div>'
+        page = page + '''<div class="bouton_bas"><div class="button_preced"><a href="questions_parametres?rubrique=0">Paramêtres</a></div>
+        <div class="button_suiv"><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div></div></div></fieldset>'''
         page = page + super().footer()
         return page
     questions_sympt_frequents.exposed = True
@@ -203,15 +246,18 @@ class Pages_Patients(html_globale.Page_Globale) :
     def questions_sympt_moins_frequents(self, rubrique = 2, edit = -1):
         self.rubrique = rubrique
         page = super().header()
-        page = page +  "<h1>Questionnaire du jour : " + self.date + "</h1> "
+        page = page + '''<fieldset class="cadre">
+        <legend>
+            Questionnaire du jour : ''' + self.date + '''
+        </legend>'''
         page = page + '''<div>
-                    <div class="rubriques">
-                        <div><a href="questions_parametres?rubrique=0">Paramêtres</a></div>
-                        <div><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div>
-                        <div><a href="questions_sympt_moins_frequents?rubrique=2">+Symptômes moins fréquents</a></div>
-                        <div><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div>
-                    </div>
-                    <div class="liste_questions">'''
+            <div class="rubriques">
+                <div class="button"><a href="questions_parametres?rubrique=0">Paramêtres</a></div>
+                <div class="button"><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div>
+                <div class="button_selected"><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>
+                <div class="button"><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div>
+            </div>
+            <div class="liste_questions">'''
 
         page = page + "<div>"
         count = 0
@@ -234,12 +280,13 @@ class Pages_Patients(html_globale.Page_Globale) :
             else :
                 #mode affichage
                 page = page + c.get_intitule() + " : " + rep.get_reponse() + ' <a href="questions_sympt_moins_frequents?edit=' + str(count) + '">'
-                page = page +'<img src="./image_edit.jpg" alt="Edit"/></a><br>'
+                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
             count = count + 1
 
         page = page + "</div>"
         page = page + " </div>"
-        page = page + '<div><div><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div><div><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div></div></div>'
+        page = page + '''<div class="bouton_bas"><div class="button_preced"><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div>
+        <div class="button_suiv"><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div></div></div></fieldset>'''
         page = page + super().footer()
         return page
     questions_sympt_moins_frequents.exposed = True
@@ -248,15 +295,18 @@ class Pages_Patients(html_globale.Page_Globale) :
     def questions_sympt_graves(self, rubrique = 3, edit = -1):
         self.rubrique = rubrique
         page = super().header()
-        page = page +  "<h1>Questionnaire du jour : " + self.date + "</h1> "
+        page = page + '''<fieldset class="cadre">
+        <legend>
+            Questionnaire du jour : ''' + self.date + '''
+        </legend>'''
         page = page + '''<div>
-                    <div class="rubriques">
-                        <div><a href="questions_parametres?rubrique=0">Paramêtres</a></div>
-                        <div><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div>
-                        <div><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>
-                        <div><a href="questions_sympt_graves?rubrique=3">+Symptômes graves</a></div>
-                    </div>
-                    <div class="liste_questions">'''
+            <div class="rubriques">
+                <div class="button"><a href="questions_parametres?rubrique=0">Paramêtres</a></div>
+                <div class="button"><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div>
+                <div class="button"><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>
+                <div class="button_selected"><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div>
+            </div>
+            <div class="liste_questions">'''
 
         page = page + "<div>"
         count = 0
@@ -279,14 +329,29 @@ class Pages_Patients(html_globale.Page_Globale) :
             else :
                 #mode affichage
                 page = page + c.get_intitule() + " : " + rep.get_reponse() + ' <a href="questions_sympt_graves?edit=' + str(count) + '">'
-                page = page +'<img src="./image_edit.jpg" alt="Edit"/></a><br>'
+                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
             count = count + 1
+
+        #Commentaire du questionnaire
+        if int(edit) == 1000 :
+            page = page + "<form action='enregistrer_commentaire' method='GET'>"
+            page = page + '<br><label for="reponse"><b>Commentaire</b></label>'
+            page = page + '<br>Réponse : '
+            page = page + '<br><textarea id="reponse" name="reponse" rows="2" cols="40" >'+ self.questionnaire_jour.get_commentaire() + '</textarea>'
+            page = page + '<input type="submit" value="V">'
+            page = page + "</form>"
+        else :
+            #mode affichage
+            page = page + "Commentaire : " + self.questionnaire_jour.get_commentaire() + ' <a href="questions_sympt_graves?edit=1000">'
+            page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
+
+
 
         page = page + "</div>"
         page = page + " </div>"
-        page = page + '<div><div><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>'
-        page = page + '<div><a href="valider_questionnaire">VALIDER</a></div></div>'
-        page = page + '</div>'
+        page = page + '<div class="bouton_bas"><div class="button_preced"><div><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div>'
+        page = page + '<div class="button_suiv"><a href="valider_questionnaire">VALIDER</a></div></div>'
+        page = page + '</div></div></fieldset>'
         page = page + super().footer()
         return page
     questions_sympt_graves.exposed = True
@@ -309,6 +374,13 @@ class Pages_Patients(html_globale.Page_Globale) :
         return page
     affiche_rubrique_courant.exposed = True
 
+
+    #Enregistre le commentaire du questionnaire
+    def enregistrer_commentaire(self, reponse) :
+        self.questionnaire_jour.set_commentaire(reponse)
+        page = self.affiche_rubrique_courant()
+        return page
+    enregistrer_commentaire.exposed = True
 
     #Enregistrement de la saisie
     def enregistrer_question(self, id, reponse):
@@ -347,14 +419,9 @@ class Pages_Patients(html_globale.Page_Globale) :
 
     def valider_questionnaire(self):
         id_patient = model_global.get_user_id()
-        questionnaire_jour = questionnaire.Questionnaire()
-        questionnaire_jour.set_id_patient(id_patient)
-        dateQ = strftime("%Y-%m-%d", self.date_time_quest)
-        heureQ = strftime("%H:%M", self.date_time_quest)
-        questionnaire_jour.set_date(dateQ)
-        questionnaire_jour.set_heure(heureQ)
+        self.questionnaire_jour.set_id_patient(id_patient)
         #enregistrer questionnaire
-        idques = dao_questionnaire.dao_Questionnaire().insert_questionnaire(questionnaire_jour)
+        idques = dao_questionnaire.dao_Questionnaire().insert_questionnaire(self.questionnaire_jour)
         #Enregistrer les responses
         for rep in self.reponses_parametres :
             rep.set_id_questionnaire(idques)
@@ -372,8 +439,15 @@ class Pages_Patients(html_globale.Page_Globale) :
             rep.set_id_questionnaire(idques)
             dao_reponse.dao_Reponse().insert_reponse(rep)
 
-        page =  str(idques) + "; " + str(questionnaire_jour.get_date()) + "; " + str(questionnaire_jour.get_heure()) + "; " + str(questionnaire_jour.get_id_patient())
-        page = "valider_questionnaire:" + page
+        #page =  str(idques) + "; " + str(self.questionnaire_jour.get_date()) + "; " + str(self.questionnaire_jour.get_heure()) + "; " + str(self.questionnaire_jour.get_id_patient())
+        page = super().header()
+        page = page + '''<fieldset class="cadre">
+        <legend>
+            Questionnaire du jour : ''' + self.date + '''
+        </legend>'''
+        page = page + 'Votre questionnaire a bien été validé !<br><a href="accueil_patient">Retour accueil</a>'
+        page = page + "</fieldset>"
+        page = page + super().footer()
         return page
     valider_questionnaire.exposed = True
 
