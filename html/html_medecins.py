@@ -284,6 +284,10 @@ class Pages_Medecins(html_globale.Page_Globale):
 
     def nouveau_question(self, niveau):
         page = super().header()
+        page = page + '''<fieldset class="cadre">
+        <legend>
+            Ajouter une question
+        </legend>'''
         page = page + '''
         <form action="enregistrer_question" method="GET">
             <div>
@@ -297,8 +301,13 @@ class Pages_Medecins(html_globale.Page_Globale):
                 <textarea id="valeur" name="valeur" rows="2" cols="50"></textarea><br>
 
                 <label for="reponse_alerte">Réponse alerte:</label><br>
-                <input type="text" id="reponse_alerte" name="reponse_alerte"><br>
-
+                <input type="text" id="reponse_alerte" name="reponse_alerte">
+                <select name="comparateur" id="comparateur">
+                    <option value=0 >Plus grand</option>
+                    <option value=1 >Plus petit</option>
+                    <option value=2 selected>Egale</option>
+                </select>
+                <br>
                 <label for="type_reponse">Type de réponse :</label>
                 <select name="type_reponse" id="type_reponse">
                     <option value="Texte" selected >Texte</option>
@@ -331,13 +340,13 @@ class Pages_Medecins(html_globale.Page_Globale):
                 <input type="submit" value="Enregistrer">
             </div>
         </form>
-        '''
+        </fieldset>'''
         page = page + super().footer()
         return page
     nouveau_question.exposed = True
 
 
-    def enregistrer_question(self, niveau, intitule, description, valeur, type_reponse, reponse_alerte):
-        dao_question.dao_Question().insert_question2(intitule, description, valeur, niveau, type_reponse, reponse_alerte)
+    def enregistrer_question(self, niveau, intitule, description, valeur, type_reponse, reponse_alerte, comparateur):
+        dao_question.dao_Question().insert_question2(intitule, description, valeur, niveau, type_reponse, reponse_alerte, comparateur)
         return self.liste_questions()
     enregistrer_question.exposed = True

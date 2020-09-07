@@ -12,9 +12,10 @@ class Question:
         self.valeur = None
         self.type_reponse = None
         self.reponse_alerte = None
+        self.comparateur = 2
 
     #Saisir un acces avec tout ses attributs d'un seul coup
-    def set_question(self, id, intitule, description, valeur, niveau, type_reponse, reponse_alerte):
+    def set_question(self, id, intitule, description, valeur, niveau, type_reponse, reponse_alerte, comparateur):
         self.id = id
         self.intitule = intitule
         self.description = description
@@ -22,6 +23,7 @@ class Question:
         self.valeur = valeur
         self.type_reponse = type_reponse
         self.reponse_alerte = None
+        self.comparateur = comparateur
 
     #Affichage
     def to_string(self) :
@@ -49,6 +51,9 @@ class Question:
     def set_reponse_alerte(self, reponse_alerte) :
         self.reponse_alerte = reponse_alerte
 
+    def set_comparateur(self, comparateur) :
+        self.comparateur = comparateur
+
 
     #Les GETTER permettent de récupérer les valeurs des attributs proprement
     def get_id(self) :
@@ -71,3 +76,6 @@ class Question:
 
     def get_reponse_alerte(self) :
         return self.reponse_alerte
+
+    def get_comparateur(self) :
+        return self.comparateur
