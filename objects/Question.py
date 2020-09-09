@@ -1,7 +1,7 @@
 #!/bin/env python
 # coding=utf-8
 
-class Question:
+class Question(object) :
 
     #Constructeur de la classe Personne
     def __init__(self):
@@ -27,7 +27,7 @@ class Question:
 
     #Affichage
     def to_string(self) :
-        return str(self.id) + ", <b>" + self.intitule + "</b><br>" + self.description + ", " + self.valeur + ", " + str(self.niveau) + ", " + self.type_reponse + ", " + str(self.reponse_alerte)
+        return "<b>" + self.intitule + "</b><br>" + self.description + ", " + self.valeur + ", " + str(self.niveau) + ", " + self.type_reponse + ", " + str(self.reponse_alerte)
 
     #Les SETTER permettent de saisirs les valeurs des attributs proprement
     def set_id(self, id) :

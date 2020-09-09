@@ -20,10 +20,10 @@ from objects import medecin
 #classes html
 from html import html_medecins
 from html import html_patients
-from html import html_globale
+from html import html_page
 from html import html_questions
 
-class Accueil(html_globale.Page_Globale):
+class Accueil(html_page.Page_html):
 
     def index(self):
         page = super().entete()
@@ -42,6 +42,8 @@ class Accueil(html_globale.Page_Globale):
         page = page + super().footer()
         return page
     index.exposed = True
+
+#Model de traitement
 
 
 #Definition des liens vers les classes

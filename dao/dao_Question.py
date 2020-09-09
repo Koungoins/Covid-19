@@ -53,7 +53,7 @@ class dao_Question(object)  :
     def get_questions_niveau(self, niveau) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, intitule, description_q, valeur, niveau, type_reponse, reponse_alerte, comparateur FROM questions WHERE niveau = " + str(niveau))
+        cursor.execute("SELECT id, intitule, description_q, valeur, niveau, type_reponse, reponse_alerte, comparateur FROM questions WHERE niveau = " + str(niveau) + " ORDER BY id")
         result = cursor.fetchall()
         p = []
         pcur = None

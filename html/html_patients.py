@@ -14,10 +14,10 @@ from objects import personne
 from objects import question
 from objects import reponse
 from objects import questionnaire
-from html import html_globale
+from html import html_page
 import model_global
 
-class Pages_Patients(html_globale.Page_Globale) :
+class Pages_Patients(html_page.Page_html) :
 
     def __init__(self):
         self.titre_page = "Espace patients"
@@ -74,11 +74,14 @@ class Pages_Patients(html_globale.Page_Globale) :
 
     #Construit les listes de réponses pour stoquer les saisies du patient avant d'enregistrer dans la base
     def init_listes_questions(self):
-        #Les paramêtres
-        self.liste_parametres = dao_question.dao_Question().get_questions_niveau(0)
         id_patient = model_global.get_user_id()
 
+        #Récupère la liste des question de la rubrique
+        self.liste_parametres = dao_question.dao_Question().get_questions_niveau(0)
+
+        #Récupère les données du dernier questionnaire
         self.reponses_parametres = dao_reponse.dao_Reponse().get_last_reponse_patient(id_patient, 0)
+        #Récupère les valeurs par défaut des questions si première saisie
         if len(self.reponses_parametres) == 0 :
             self.liste_parametres = dao_question.dao_Question().get_questions_niveau(0)
             self.reponses_parametres = []
@@ -170,8 +173,8 @@ class Pages_Patients(html_globale.Page_Globale) :
             #Mode edition
             if int(count) == int(edit) :
                 page = page + "<form action='enregistrer_question' method='GET'>"
-                page = page + '<br><label for="reponse"><b>' + c.get_intitule() + '</b></label>'
-                page = page + "<br>Déscription:"+c.get_description()
+                page = page + '<br><label for="reponse"><b>' + str(count+1) + ". " + c.get_intitule() + '</b></label>'
+                page = page + "<br>Déscription:" + c.get_description()
                 page = page + '<br>Réponse : '
                 page = page + '<input type="hidden" name="id" value="' + str(c.get_id()) + '">'
                 if c.get_type_reponse() == "Numérique" :
@@ -182,7 +185,7 @@ class Pages_Patients(html_globale.Page_Globale) :
                 page = page + "</form>"
             else :
                 #mode affichage
-                page = page + c.get_intitule() + " : " + rep.get_reponse() + ' <a href="questions_parametres?edit=' + str(count) + '">'
+                page = page + str(count+1) + ". " + c.get_intitule() + " : <b>" + rep.get_reponse() + '</b> <a href="questions_parametres?edit=' + str(count) + '">'
                 page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
             count = count + 1
 
@@ -218,7 +221,7 @@ class Pages_Patients(html_globale.Page_Globale) :
             #Mode edition
             if int(count) == int(edit) :
                 page = page + "<form action='enregistrer_question' method='GET'>"
-                page = page + '<br><label for="reponse"><b>' + c.get_intitule() + '</b></label>'
+                page = page + '<br><label for="reponse"><b>' + str(count+1) + ". " + c.get_intitule() + '</b></label>'
                 page = page + "<br>Déscription:"+c.get_description()
                 page = page + '<br>Réponse : '
                 page = page + '<input type="hidden" name="id" value="' + str(c.get_id()) + '">'
@@ -230,7 +233,7 @@ class Pages_Patients(html_globale.Page_Globale) :
                 page = page + "</form>"
             else :
                 #mode affichage
-                page = page + c.get_intitule() + " : " + rep.get_reponse() + ' <a href="questions_sympt_frequents?edit=' + str(count) + '">'
+                page = page + str(count+1) + ". " + c.get_intitule() + " : <b>" + rep.get_reponse() + '</b> <a href="questions_sympt_frequents?edit=' + str(count) + '">'
                 page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
             count = count + 1
 
@@ -267,7 +270,7 @@ class Pages_Patients(html_globale.Page_Globale) :
             #Mode edition
             if int(count) == int(edit) :
                 page = page + "<form action='enregistrer_question' method='GET'>"
-                page = page + '<br><label for="reponse"><b>' + c.get_intitule() + '</b></label>'
+                page = page + '<br><label for="reponse"><b>' + str(count+1) + ". " + c.get_intitule() + '</b></label>'
                 page = page + "<br>Déscription:"+c.get_description()
                 page = page + '<br>Réponse : '
                 page = page + '<input type="hidden" name="id" value="' + str(c.get_id()) + '">'
@@ -279,7 +282,7 @@ class Pages_Patients(html_globale.Page_Globale) :
                 page = page + "</form>"
             else :
                 #mode affichage
-                page = page + c.get_intitule() + " : " + rep.get_reponse() + ' <a href="questions_sympt_moins_frequents?edit=' + str(count) + '">'
+                page = page + str(count+1) + ". " + c.get_intitule() + " : <b>" + rep.get_reponse() + '</b> <a href="questions_sympt_moins_frequents?edit=' + str(count) + '">'
                 page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
             count = count + 1
 
@@ -314,7 +317,7 @@ class Pages_Patients(html_globale.Page_Globale) :
             #Mode edition
             if int(count) == int(edit) :
                 page = page + "<form action='enregistrer_question' method='GET'>"
-                page = page + '<br><label for="reponse"><b>' + c.get_intitule() + '</b></label>'
+                page = page + '<br><label for="reponse"><b>' + str(count+1) + ". " + c.get_intitule() + '</b></label>'
                 page = page + "<br>Déscription:"+c.get_description()
                 page = page + '<br>Réponse : '
                 page = page + '<input type="hidden" name="id" value="' + str(c.get_id()) + '">'
@@ -326,15 +329,14 @@ class Pages_Patients(html_globale.Page_Globale) :
                 page = page + "</form>"
             else :
                 #mode affichage
-                page = page + c.get_intitule() + " : " + rep.get_reponse() + ' <a href="questions_sympt_graves?edit=' + str(count) + '">'
+                page = page + str(count+1) + ". " + c.get_intitule() + " : <b>" + rep.get_reponse() + '</b> <a href="questions_sympt_graves?edit=' + str(count) + '">'
                 page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
             count = count + 1
 
         #Commentaire du questionnaire
         if int(edit) == 1000 :
             page = page + "<form action='enregistrer_commentaire' method='GET'>"
-            page = page + '<br><label for="reponse"><b>Commentaire</b></label>'
-            page = page + '<br>Réponse : '
+            page = page + '<br><label for="reponse"><b>Commentaire:</b></label>'
             page = page + '<br><textarea id="reponse" name="reponse" rows="2" cols="40" >'+ self.questionnaire_jour.get_commentaire() + '</textarea>'
             page = page + '<input type="submit" value="V">'
             page = page + "</form>"

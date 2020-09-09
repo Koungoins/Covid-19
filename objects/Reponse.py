@@ -1,7 +1,7 @@
 #!/bin/env python
 # coding=utf-8
 
-class Reponse:
+class Reponse(object):
 
     #Constructeur de la classe Personne
     def __init__(self):

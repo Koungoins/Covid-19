@@ -1,7 +1,7 @@
 #!/bin/env python
 # coding=utf-8
 
-class Questionnaire:
+class Questionnaire(object) :
 
     #Constructeur de la classe Personne
     def __init__(self):
@@ -10,14 +10,18 @@ class Questionnaire:
         self.heure = None
         self.id_patient = -1
         self.commentaire = ""
+        self.analyse = ""
+        self.reponses = []
 
     #Saisir un acces avec tout ses attributs d'un seul coup
-    def set_questionnaire(self, id, date, heure, id_patient, commentaire):
+    def set_questionnaire(self, id, date, heure, id_patient, commentaire, analyse):
         self.id = id
         self.date = date
         self.heure = heure
         self.id_patient = id_patient
         self.commentaire = commentaire
+        self.analyse = ""
+        self.reponses = []
 
     #Affichage
     def to_string(self) :
@@ -39,6 +43,12 @@ class Questionnaire:
     def set_commentaire(self, commentaire) :
         self.commentaire = commentaire
 
+    def set_analyse(self, analyse) :
+        self.analyse = analyse
+
+    def set_reponses(self, reponses) :
+        self.reponses = reponses
+
     #Les GETTER permettent de récupérer les valeurs des attributs proprement
     def get_id(self) :
         return self.id
@@ -54,3 +64,9 @@ class Questionnaire:
 
     def get_commentaire(self) :
         return self.commentaire
+
+    def get_analyse(self) :
+        return self.analyse
+
+    def get_reponses(self) :
+        return self.reponses

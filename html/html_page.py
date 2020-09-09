@@ -4,7 +4,7 @@
 #import cherrypy
 import model_global
 
-class Page_Globale(object) :
+class Page_html(object) :
 
 
     def get_css(self):
@@ -51,6 +51,25 @@ fieldset {
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff,endColorstr=#f4f4f4)";
 }
 
+
+table tr tt {
+	transform:rotate(270deg);
+    -ms-transform:rotate(270deg); /* Internet Explorer */
+    -moz-transform:rotate(270deg); /* Firefox */
+    -webkit-transform:rotate(270deg); /* Safari et Chrome */
+    -o-transform:rotate(270deg); /* Opera */
+}
+
+.ligne_gris {
+    background-color:#D8C9B8;
+}
+
+.cel_titre_ribrique {
+    text-align: center;
+    background-color: burlywood;
+    padding: 10px;
+}
+
 legend {
     color: #eeab69;
 }
@@ -85,11 +104,11 @@ legend {
     width: 200px;
     height: 40px;
 	float:center;
-    background: linear-gradient(to bottom, #edeef3ea 0%,#ffffff 100%);
+    background: burlywood;
     border: none;
     border-radius: 5px;
     position: relative;
-    border-bottom: 4px solid #bfd2df;
+    /*border-bottom: 4px solid #bfd2df;*/
     color: #fbfbfb;
     font-weight: 600;
     font-family: 'Open Sans', sans-serif;
@@ -109,11 +128,11 @@ legend {
     width: 200px;
     height: 40px;
 	float:right;
-    background: linear-gradient(to bottom, #edeef3ea 0%,#ffffff 100%);
+    background: burlywood;
     border: none;
     border-radius: 5px;
     position: relative;
-    border-bottom: 4px solid #bfd2df;
+    /*border-bottom: 4px solid #bfd2df;*/
     color: #fbfbfb;
     font-weight: 600;
     font-family: 'Open Sans', sans-serif;
@@ -132,11 +151,11 @@ legend {
     width: 200px;
     height: 40px;
 	float:left;
-    background: linear-gradient(to bottom, #edeef3ea 0%,#ffffff 100%);
+    background: burlywood;
     border: none;
     border-radius: 5px;
     position: relative;
-    border-bottom: 4px solid #bfd2df;
+    /*border-bottom: 4px solid #bfd2df;*/
     color: #fbfbfb;
     font-weight: 600;
     font-family: 'Open Sans', sans-serif;
@@ -155,7 +174,7 @@ legend {
     width: 130px;
     height: 40px;
 	float:left;
-    background: linear-gradient(to bottom, #edeef3ea 0%,#ffffff 100%);
+    background: burlywood ;
     border: none;
     border-radius: 5px;
     position: relative;
@@ -178,7 +197,7 @@ legend {
     width: 130px;
     height: 40px;
 	float:left;
-    background: linear-gradient(to bottom, #edeef3ea 0%,#ffffff 100%);
+    background: linear-gradient(to bottom, burlywood  0%,burlywood  100%);
     border: none;
     border-radius: 5px;
     position: relative;

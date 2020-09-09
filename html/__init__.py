@@ -1,4 +1,4 @@
-import html.html_globale
+import html.html_page
 import html.html_patients
 import html.html_medecins
 import html.html_questions

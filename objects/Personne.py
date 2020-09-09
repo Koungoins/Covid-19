@@ -2,7 +2,7 @@
 # coding=utf-8
 from objects import coordonnees
 
-class Personne:
+class Personne(object) :
 
     #Constructeur de la classe Personne
     def __init__(self):

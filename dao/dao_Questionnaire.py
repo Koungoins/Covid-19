@@ -3,6 +3,8 @@
 import SQLiteManager as db
 from objects import questionnaire as per
 from dao import dao_question
+from dao import dao_reponse
+
 
 class dao_Questionnaire(object)  :
 
@@ -26,19 +28,45 @@ class dao_Questionnaire(object)  :
     def get_questionnaire(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, date_q, heure, id_patient, commentaire FROM questionnaires WHERE id = " + str(id))
+        cursor.execute("SELECT id, date_q, heure, id_patient, commentaire, analyse FROM questionnaires WHERE id = " + str(id))
         result = cursor.fetchall()
+        base.close()
         p = None
         if len(result) > 0 :
             p = per.Questionnaire()
-            p.set_questionnaire(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4])
+            p.set_questionnaire(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4], result[0][5])
+            p.set_reponses(dao_reponse.dao_Reponse().get_reponses_questionnaire2(id))
+        return p
+
+    #Donne les questionnaires du patient du plus recent au plus ancien
+    def get_questionnaires_patient(self, id, niveau) :
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        cursor.execute('''SELECT id, date_q, heure, id_patient, commentaire, analyse
+                            FROM questionnaires
+                            WHERE id_patient = ''' + str(id) + '''
+                            ORDER BY date_q DESC''')
+        result = cursor.fetchall()
         base.close()
+        p = []
+        pcur = None
+        for cur in result :
+            pcur = per.Questionnaire()
+            pcur.set_id(cur[0])
+            pcur.set_date(cur[1])
+            pcur.set_heure(cur[2])
+            pcur.set_id_patient(cur[3])
+            pcur.set_commentaire(cur[4])
+            pcur.set_analyse(cur[5])
+            #Recupere les reponses
+            pcur.set_reponses(dao_reponse.dao_Reponse().get_reponses_questionnaire(id, niveau))
+            p.append(pcur)
         return p
 
     def get_last_questionnaire(self, id_patient) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute('''SELECT id, date_q, heure, id_patient, commentaire
+        cursor.execute('''SELECT id, date_q, heure, id_patient, commentaire, analyse
                         FROM questionnaires
                         WHERE  id_patient = '''+ str(id_patient)+''' 
                         AND id=(SELECT MAX(id) FROM questionnaires WHERE id_patient = '''+ str(id_patient)+''')''')
@@ -46,7 +74,7 @@ class dao_Questionnaire(object)  :
         p = None
         if len(result) > 0 :
             p = per.Questionnaire()
-            p.set_questionnaire(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4])
+            p.set_questionnaire(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4], result[0][5])
         base.close()
         return p
 
@@ -75,8 +103,7 @@ class dao_Questionnaire(object)  :
     def update_questionnaire(self, pers) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("UPDATE questions SET intitule = ?, description_q = ?, valeur = ?, niveau = ? WHERE id = ?",
-        (pers.get_intitule(), pers.get_description(), pers.get_valeur(), pers.get_niveau(), pers.get_id()))
+        cursor.execute("UPDATE questionnaires SET analyser = ? WHERE id = ?", (pers.get_analyser, pers.get_id()))
         base.close()
 
 

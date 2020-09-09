@@ -68,12 +68,14 @@ class dao_Patient(dao_personne.dao_Personne) :
         return p
 
     #Renvoi la liste de toutes les personnes
-    def get_all_patients(self) :
+    def get_patients_medecin(self, id_medecin, recherche) :
         base = db.SQLiteManager()
         cursor = base.connect()
         cursor.execute('''SELECT pat.id, pat.id_personne, pers.nom, pers.prenom, pers.date_de_naissance, pat.nss, pat.id_medecin
                         FROM patients AS pat
-                        JOIN personnes AS pers ON pers.id = pat.id_personne''')
+                        JOIN personnes AS pers ON pers.id = pat.id_personne
+                        WHERE pat.id_medecin = ''' + str(id_medecin) + ''' AND 
+                        (pers.nom LIKE '%''' + recherche + '''%' OR pers.prenom LIKE '%''' + recherche + '''%' OR pat.nss LIKE '%''' + recherche + '''%') ''')
         result = cursor.fetchall()
         p = []
         pcur = None

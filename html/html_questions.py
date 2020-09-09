@@ -5,10 +5,10 @@ import cherrypy
 from objects import question
 from dao import dao_question
 
-from html import html_globale
+from html import html_page
 import model_global
 
-class Pages_Questions(html_globale.Page_Globale) :
+class Pages_Questions(html_page.Page_html) :
 
     def __init__(self):
         self.titre_page = "Espace Questions"

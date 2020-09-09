@@ -36,7 +36,7 @@ class SQLiteManager(object):
         connect.execute('CREATE TABLE coordonnees (id INTEGER PRIMARY KEY NOT NULL, telephone VARCHAR(100), adresse_postale VARCHAR(100), adresse_mail VARCHAR(100), id_personne INTEGER NOT NULL)')
         connect.execute('CREATE TABLE medecins (id INTEGER PRIMARY KEY NOT NULL, rpps BIGINT NOT NULL liberal BOOLEAN, hopital VARCHAR(100), id_personne INTEGER NOT NULL)')
         connect.execute('CREATE TABLE patients (id INTEGER PRIMARY KEY NOT NULL, nss BIGINT NOT NULL, id_personne INTEGER NOT NULL, id_medecin INTEGER NOT NULL,)')
-        connect.execute('CREATE TABLE questionnaires (id INTEGER PRIMARY KEY NOT NULL, date_q DATE, heure TIME, id_patient INTEGER NOT NULL, commentaire VARCHAR(1000))')
+        connect.execute('CREATE TABLE questionnaires (id INTEGER PRIMARY KEY NOT NULL, date_q DATE, heure TIME, id_patient INTEGER NOT NULL, commentaire VARCHAR(1000), analyse VARCHAR(1000))')
         connect.execute('''CREATE TABLE questions (id INTEGER PRIMARY KEY NOT NULL, intitule VARCHAR(200), description_q VARCHAR(1000), 
         valeur VARCHAR(100), niveau INTEGER NOT NULL, type_reponse VARCHAR(20) NOT NULL, reponse_alerte VARCHAR(20), comparateur INTEGER)''')
         connect.execute('CREATE TABLE reponses (id INTEGER PRIMARY KEY NOT NULL, reponse VARCHAR(1000), id_question INTEGER NOT NULL, id_questionnaire INTEGER NOT NULL)')

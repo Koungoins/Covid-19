@@ -55,24 +55,53 @@ class dao_Reponse(object)  :
         base.close()
         return p
 
-    def get_all_reponses(self) :
+
+    def get_reponses_questionnaire2(self, id_questionnaire) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, reponse, id_question, id_questionnaire FROM reponses")
+        cursor.execute('''SELECT rep.id, rep.reponse, rep.id_question, rep.id_questionnaire, qu.id
+                        FROM reponses AS rep
+                        JOIN questions AS qu ON rep.id_question = qu.id
+                        JOIN questionnaires AS quest ON rep.id_questionnaire = quest.id
+                        WHERE  quest.id = ''' + str(id_questionnaire) + ''' ORDER BY qu.id''')
         result = cursor.fetchall()
         p = []
         pcur = None
         for cur in result :
             pcur = per.Reponse()
-            pcur.set_reponse2(cur[0], cur[1], cur[2], cur[3])
+            pcur.set_id(cur[0])
+            pcur.set_reponse(cur[1])
+            pcur.set_id_question(cur[2])
+            pcur.set_id_questionnaire(cur[3])
             p.append(pcur)
         base.close()
         return p
 
-    def get_reponses_questionnaire(self, niveau) :
+    def get_reponses_questionnaire(self, id_questionnaire, niveau) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, reponse, id_question, id_questionnaire FROM reponses WHERE id_questionnaire = " + str(niveau))
+        cursor.execute('''SELECT rep.id, rep.reponse, rep.id_question, rep.id_questionnaire, qu.id
+                        FROM reponses AS rep
+                        JOIN questions AS qu ON rep.id_question = qu.id
+                        JOIN questionnaires AS quest ON rep.id_questionnaire = quest.id
+                        WHERE  quest.id = ''' + str(id_questionnaire) + ''' AND qu.niveau = ''' + str(niveau) + ''' ORDER BY qu.id''')
+        result = cursor.fetchall()
+        p = []
+        pcur = None
+        for cur in result :
+            pcur = per.Reponse()
+            pcur.set_id(cur[0])
+            pcur.set_reponse(cur[1])
+            pcur.set_id_question(cur[2])
+            pcur.set_id_question(cur[3])
+            p.append(pcur)
+        base.close()
+        return p
+
+    def get_all_reponses(self) :
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        cursor.execute("SELECT id, reponse, id_question, id_questionnaire FROM reponses")
         result = cursor.fetchall()
         p = []
         pcur = None
