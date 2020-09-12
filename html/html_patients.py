@@ -1,7 +1,7 @@
 #!/bin/env python
 # coding=utf-8
 import cherrypy
-from time import gmtime, strftime
+from time import gmtime, strftime, localtime
 from time import time
 
 from dao import dao_patient
@@ -50,22 +50,26 @@ class Pages_Patients(html_page.Page_html) :
             #Stockage dans la session
             model_global.connect_user(model_global.user_type_patient, patient.get_id(), pers.get_nom(), pers.get_prenom(), pers.get_id())
             #Affichage de l'accueil patient connecté
-            self.date_time_quest = gmtime()
+            self.date_time_quest = localtime()
             page = self.accueil_patient()
         return page
     verif_connexion.exposed = True
 
 
     def accueil_patient(self):
+        id_patient = model_global.get_user_id()
         page = super().header()
         page = page + '''<fieldset class="cadre">
             <legend>
                 Espace personnel
             </legend>'''
         page = page + '''<ul>
-        <li class="button_vert"><a href="evolution_patient">Voir mon évolution</a></li>
-        <li class="button_vert"><a href="questionnaire_patient">Questionnaire</a></li>
-        <li class="button_vert"><a href="edition_patient">Modifier mes informations personnelles</a></li>
+        <li class="button_vert"><a href="evolution_patient">Voir mon évolution</a></li>'''
+        if dao_questionnaire.dao_Questionnaire().jour_rempli(id_patient) == 0:
+            page = page + '''<li class="button_vert"><a href="questionnaire_patient">Questionnaire du jour</a></li>'''
+        else :
+            page = page + '''<li class="button_vert">Questionnaire du jour REMPLI</li>'''
+        page = page + ''' <li class="button_vert"><a href="edition_patient">Modifier mes informations personnelles</a></li>
         </ul></fieldset>'''
         page = page + super().footer()
         return page
@@ -450,25 +454,77 @@ class Pages_Patients(html_page.Page_html) :
 
     #Formulaire permettant de modifier les infos d'une personne
     def edition_patient(self):
-        page = "<h1>Edition d'une personne</h1>"
+        page = super().header()
         p = dao_patient.dao_Patient().get_patient(model_global.get_user_id())
+        page = page + '''<fieldset class="cadre">
+        <legend>
+            Les des patients
+        </legend>
+        <div>'''
         page = page + '''
-        <form action="update" method="GET">
+        <title>Créer un nouveau patient</title>
+        <h1></h1>
+        <form action="mise_a_jour_patient" method="GET">
             <div>
                 <label for="nom">Nom:</label>
-                <input type="text" id="nom" name="nom_patient" value="'''+p.get_nom()+ '''"><br>
+                <input type="text" id="nom" name="nom_patient"><br>
+
                 <label for="prenom">Prénom:</label>
-                <input type="text" id="prenom" name="prenom_patient" value="'''+p.get_prenom()+ '''"><br>
+                <input type="text" id="prenom" name="prenom_patient"><br>
+
                 <label for="dateN">Date de naissance:</label>
-                <input type="date" id="dateN" name="date_patient" value="'''+p.get_date_de_naiss()+ '''"><br>
+                <input type="date" id="dateN" name="date_patient"><br>
+
+                <label for="date_teste">Date du teste:</label>
+                <input type="date" id="date_teste" name="date_teste"><br>
+
                 <label for="nss">Numéro de Sécurité Sociale:</label>
-                <input type="number" id="nss" name="nss" value="'''+str(p.get_nss())+ '''"><br>
-                <input type="submit" value="Modifier">
+                <input type="number" id="nss" name="nss"><br>
+
+                <label for="adresse_postale">Adresse postale:</label><br>
+                <textarea id="adresse_postale" name="adresse_postale" rows="3" cols="50" ></textarea><br>
+
+                <label for="tel">Numéro de téléphone:</label>
+                <input type="tel" id="phone" name="telephone" pattern="[0-9]{10}"><br>
+
+                <label for="e_mail">Adresse mail:</label>
+                <input type="email" id="e_mail" name="e_mail"><br>
+
+                <input type="submit" value="Enregistrer" class="button_vert">
             </div>
         </form>
-        '''
+        </div></fieldset>'''
+        page = page + super().footer()
         return page
     edition_patient.exposed = True
+
+    #Enregistre les information saisie dans le formulaire et affiche la liste des personnes enregistrées
+    def mise_a_jour_patient(self, nom_patient, prenom_patient, date_patient, date_teste, nss, adresse_postale, telephone, e_mail):
+        p = personne.Personne()
+        p.set_nom(nom_patient)
+        p.set_prenom(prenom_patient)
+        p.set_date_de_naiss(date_patient)
+        #Coordonnées du patient
+        coord = p.get_coordonnees()
+        coord.set_adresse_postale(adresse_postale)
+        coord.set_telephone(telephone)
+        coord.set_adresse_mail(e_mail)
+        #Enregistrement et récupère l'id
+        dao_personne.dao_Personne().update_personne(p)
+        #Recherche la personne dans la base
+        pliste = dao_patient.dao_Patient().get_patient(id)
+        page = super().header()
+        page = page + '''<fieldset class="cadre">
+        <legend>
+            Enregistrement d'un nouveau patient
+        </legend>'''
+        page = page + "<br>Nouveau patient <b>" + pliste.get_prenom() + " " + pliste.get_nom() + "<b> ajouté.<br>"
+        page = page + '''
+        <div><a href="liste_patients">Liste des patients</a>
+        <a href="accueil_medecin">Accueil</a></div></fieldset>'''
+        page = page + super().footer()
+        return page
+    mise_a_jour_patient.exposed = True
 
     #Met à jour les infos d'edition dans la base
     def update(self, nom_patient, prenom_patient, date_patient):

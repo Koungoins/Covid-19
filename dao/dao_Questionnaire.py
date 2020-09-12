@@ -4,6 +4,7 @@ import SQLiteManager as db
 from objects import questionnaire as per
 from dao import dao_question
 from dao import dao_reponse
+from datetime import date
 
 
 class dao_Questionnaire(object)  :
@@ -24,6 +25,65 @@ class dao_Questionnaire(object)  :
         base.close()
         if max == None : max = 0
         return max + 1
+
+    def questionnaire_jour_etat(self, etat):
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        req = '''SELECT COUNT(DISTINCT id_patient)
+                            FROM questionnaires
+                            WHERE date_q = CURRENT_DATE AND etat_patient = ''' + str(etat)
+        print(req)
+        cursor.execute(req)
+        result = cursor.fetchall()
+        base.close()
+        max = 0
+        if len(result) > 0 :
+            max = result[0][0]
+        return max
+
+    def questionnaire_etat_dates(self, etat, debut, fin):
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        req = "SELECT COUNT(DISTINCT id_patient) FROM questionnaires WHERE etat_patient = " + str(etat) + " AND date_q BETWEEN \'" + str(debut) + "\' AND  \'" + str(fin) + "\'"
+        print(req)
+        cursor.execute(req)
+        result = cursor.fetchall()
+        base.close()
+        max = 0
+        if len(result) > 0 :
+            max = result[0][0]
+        return max
+
+    def questionnaire_etat_depuis(self, etat, date):
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        req = "SELECT COUNT(DISTINCT id_patient) FROM questionnaires WHERE etat_patient = " + str(etat) + " AND date_q BETWEEN \'" + str(date) + "\' AND  CURRENT_DATE "
+        print(req)
+        cursor.execute(req)
+        result = cursor.fetchall()
+        base.close()
+        max = 0
+        if len(result) > 0 :
+            max = result[0][0]
+        return max
+
+    #Renvoi l'identifiant suivant en incrémentant l'id max dans la table
+    def jour_rempli(self, id_patient):
+        aujourdhui = date.today()
+        auj = aujourdhui.strftime("%Y-%m-%d")
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        req = "SELECT COUNT(*) FROM questionnaires WHERE id_patient=2 AND date_q=\'" + auj + "\'"
+        print(req)
+        cursor.execute(req)
+        result = cursor.fetchall()
+        max = 0
+        if len(result) > 0 :
+            max = result[0][0]
+        base.close()
+        if max == None : max = 0
+        return max
+
 
     def get_questionnaire(self, id) :
         base = db.SQLiteManager()
@@ -107,10 +167,10 @@ class dao_Questionnaire(object)  :
         base.close()
 
 
-    def update_questionnaire2(self, id, intitule, description, niveau) :
+    def update_questionnaire2(self, id, analyse, etat_patient) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("UPDATE questions SET intitule = ?, description_q = ?, valeur = ?, niveau = ? WHERE id = ?", (intitule, description, niveau, id))
+        cursor.execute("UPDATE questionnaires SET analyse = ?, etat_patient = ? WHERE id = ?", (analyse, etat_patient, id))
         base.close()
 
 

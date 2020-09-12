@@ -3,6 +3,12 @@
 
 #import cherrypy
 import model_global
+from datetime import date
+from time import gmtime, strftime
+from datetime import timedelta
+from dao import dao_patient
+from dao import dao_questionnaire
+
 
 class Page_html(object) :
 
@@ -72,6 +78,88 @@ table tr tt {
 
 legend {
     color: #eeab69;
+}
+
+.conteneur_analyse{
+    width: 600px;
+}
+
+.text_analyse{
+    margin: 0px;
+    width: 450px;
+    height: 138px;
+    float: left;
+}
+
+.infos_patient {
+    float: left;
+}
+
+.recap_nouveaux{
+    color: black;
+    font-size: larger;
+}
+
+.recap_gerrie{
+    color: green;
+    font-size: larger;
+}
+
+.recap_moyen {
+    color: #FFE837;
+    font-size: larger;
+}
+
+.recap_grave {
+    color: orange;
+    font-size: larger;
+}
+
+.recap_tres_grave {
+    color: darkred;
+    font-size: larger;
+}
+
+.recap_decede {
+    color: grey;
+    font-size: larger;
+}
+
+.couleur_gerrie {
+    color: green;
+}
+
+.couleur_moyen {
+    color: #FFE837;
+}
+
+.couleur_grave {
+    color: orange;
+}
+
+.couleur_tres_grave {
+    color: darkred;
+}
+
+.couleur_decede {
+    color: grey;
+}
+
+.conteneur_recap {
+    width: 700px;
+    float : left;
+}
+
+.case_recap {
+    width: 300px;
+    /*height: 300px;*/
+    margin-right: 30px;
+    float : left;
+}
+
+.radio_etat {
+    width: 120px;
+    float: left;
 }
 
 .cadre {
@@ -247,21 +335,24 @@ legend {
     def footer(self):
         return '</div></body></html>'
 
-    #Identification d'un patient
-    def connexion(self, titre):
+    #Page "Connexion"
+    def connexion(self, titre, medecin=0):
         page = self.entete()
-        page = page + "<div class='box'>"
         page = page + '''<fieldset class="cadre">
         <legend>
             Connexion
         </legend>'''
-        page = page + "<div>"
-        page = page + '''<div><form action="verif_connexion" methode="GET">
-                    <label for="login">Identifiant :</label>
+        page = page + "<div class='box'>"
+        page = page + '''<div><form action="verif_connexion" methode="GET">'''
+        if medecin == 1 :
+            page = page + '<a href="nouveau_medecin">S\'inscrire</a><br>'
+        page = page + '''<label for="login">Identifiant :</label>
                     <input type="text" id="login" name="login"><br>
                     <label for="passe">Mot de passe :</label>
                     <input type="password" id="passe" name="passe"><br>
-                    <input type="submit" value="Connexion">
+                    <div> '''
+        page = page + '<input type="submit" value="Connexion" class="button_vert"></div>'
+        page = page + '''
                 </form>
             </div>
         </div></fieldset></div>
@@ -269,6 +360,102 @@ legend {
         page = page + self.footer()
         return page
     connexion.exposed = True
+
+    #Page  "Covid-19 en temps réel"
+    def tableau_chiffres(self):
+        #Aujourdhui
+        aujourdhui = date.today()
+        auj = aujourdhui.strftime("%d/%m/%Y")
+        #Il y a 7 jours
+        jours = aujourdhui - timedelta(days=7)
+        _7jours = jours.strftime("%Y-%m-%d")
+        #Mois en cours
+        jours = date.today()
+        #Au debut du mois
+        jours = jours.replace(day=1)
+        _mois = jours.strftime("%Y-%m-%d")
+        #Mois dernier
+        jours = jours  - timedelta(days=1)
+        _fin_mois_dernier = jours.strftime("%Y-%m-%d")
+        jours = jours.replace(day=1)
+        _debut_mois_dernier = jours.strftime("%Y-%m-%d")
+
+        page = self.entete()
+        page = page + '''<div><div>
+                            <h3>Les chiffres du Coronavirus en temps réel <br>''' + auj + '''</h3>
+                        </div>'''
+        page = page + '<div class="box">'
+        page = page + '''   <div class="conteneur_recap">
+                                <div class="case_recap">
+                                    <fieldset>
+                                    <legend>
+                                        Aujourd'hui
+                                    </legend>
+                                    <div>
+                                        <div class="recap_nouveaux">''' + str(dao_patient.dao_Patient().get_nbr_nouveaux_patients_aujourdhui()) + ''' : Nouveaux</div>
+                                        <div class="recap_gerrie">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_jour_etat(0)) + ''' : Guéris</div>
+                                        <div class="recap_moyen">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_jour_etat(1)) + ''' : Etat moyen</div>
+                                        <div class="recap_grave">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_jour_etat(2)) + ''' : Etat grave</div>
+                                       <div class="recap_tres_grave"> ''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_jour_etat(3)) + ''' : Etat très grave</div>
+                                        <div class="recap_decede">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_jour_etat(4)) + ''' : Décès</div>
+                                    </div>
+                                    </fieldset>
+                                </div>
+                                <div class="case_recap">
+                                    <fieldset>
+                                    <legend>
+                                        Les 7 derniers jours
+                                    </legend>
+                                    <div>
+                                        <div class="recap_nouveaux">''' + str(dao_patient.dao_Patient().get_nbr_patients_depuis(_7jours)) + ''' : Nouveaux patients</div>
+                                        <div class="recap_gerrie">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_depuis(0, _7jours)) + ''' : Guéris</div>
+                                        <div class="recap_moyen">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_depuis(1, _7jours)) + ''' : Etat moyen</div>
+                                        <div class="recap_grave">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_depuis(2, _7jours)) + ''' : Etat grave</div>
+                                        <div class="recap_tres_grave"> ''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_depuis(3, _7jours)) + ''' : Etat très grave</div>
+                                        <div class="recap_decede">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_depuis(4, _7jours)) + ''' : Décès</div>
+                                    </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="conteneur_recap">
+                                <div class="case_recap">
+                                    <fieldset>
+                                    <legend>
+                                        Le mois en cours
+                                    </legend>
+                                    <div>
+                                        <div class="recap_nouveaux">''' + str(dao_patient.dao_Patient().get_nbr_patients_depuis(_mois)) + ''' : Nouveaux patients</div>
+                                        <div class="recap_gerrie">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_depuis(0, _mois)) + ''' : Guéris</div>
+                                        <div class="recap_moyen">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_depuis(1, _mois)) + ''' : Etat moyen</div>
+                                        <div class="recap_grave">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_depuis(2, _mois)) + ''' : Etat grave</div>
+                                        <div class="recap_tres_grave"> ''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_depuis(3, _mois)) + ''' : Etat très grave</div>
+                                        <div class="recap_decede">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_depuis(4, _mois)) + ''' : Décès</div>
+                                    </div>
+                                    </fieldset>
+                                </div>
+                                <div class="case_recap">
+                                    <fieldset>
+                                    <legend>
+                                        Le mois dernier
+                                    </legend>
+                                    <div>
+                                        <div class="recap_nouveaux">''' + str(dao_patient.dao_Patient().get_nbr_patients_dates(_debut_mois_dernier, _fin_mois_dernier)) + ''' : Nouveaux patients</div>
+                                        <div class="recap_gerrie">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_dates(0, _debut_mois_dernier, _fin_mois_dernier)) + ''' : Guéris</div>
+                                        <div class="recap_moyen">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_dates(1, _debut_mois_dernier, _fin_mois_dernier)) + ''' : Etat moyen</div>
+                                        <div class="recap_grave">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_dates(2, _debut_mois_dernier, _fin_mois_dernier)) + ''' : Etat grave</div>
+                                        <div class="recap_tres_grave">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_dates(3, _debut_mois_dernier, _fin_mois_dernier)) + ''' : Etat très grave</div>
+                                        <div class="recap_decede">''' + str(dao_questionnaire.dao_Questionnaire().questionnaire_etat_dates(4, _debut_mois_dernier, _fin_mois_dernier)) + ''' : Décès</div>
+                                    </div>
+                                    </fieldset>
+                                </div>
+                            </div>'''
+        page = page + '''</div>
+        <div><a href="/accueil/">Accueil</a></div>
+        </div>'''
+        page = page + self.footer()
+        return page
+    tableau_chiffres.exposed = True
+
 
     def deconnexion(self) :
         model_global.deconnect_user()

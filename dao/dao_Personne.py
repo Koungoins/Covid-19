@@ -2,6 +2,8 @@
 # coding=utf-8
 import SQLiteManager as db
 from objects import personne as per
+from objects import coordonnees
+from dao import dao_coordonnees
 
 class dao_Personne(object)  :
 
@@ -29,11 +31,13 @@ class dao_Personne(object)  :
         cursor = base.connect()
         cursor.execute("SELECT id, nom, prenom, date_de_naissance FROM personnes WHERE id = "+str(id))
         result = cursor.fetchall()
+        base.close()
         p = None
         if len(result) > 0 :
             p = per.Personne()
             p.set_personne(result[0][0], result[0][1], result[0][2], result[0][3])
-        base.close()
+            coord = dao_coordonnees.dao_Coordonnees().get_coordonnees_personne(id)
+            p.set_coordonnees2(coord)
         return p
 
     #Renvoi la liste de toutes les personnes
@@ -73,15 +77,18 @@ class dao_Personne(object)  :
     def update_personne(self, pers) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("UPDATE personnes SET nom = ?, prenom = ? ,date_de_naissance = ? WHERE id = ?",
+        cursor.execute("UPDATE personnes SET nom = ?, prenom = ?, date_de_naissance = ? WHERE id = ?",
         (pers.get_nom(), pers.get_prenom(), pers.get_date_de_naiss(), pers.get_id()))
         base.close()
+        coord = pers.get_coordonnees()
+        coord.set_id_personne(pers.get_id())
+        dao_coordonnees.dao_Coordonnees().update_coordonnees(coord)
 
     #Met à jour les information d'une personne dans la table personne à l'aide des infos en argument
     def update_personne2(self, id, nom, prenom, date) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("UPDATE personnes SET nom = ?, prenom = ? ,date_de_naissance = ? WHERE id = ?", (nom, prenom, date, id))
+        cursor.execute("UPDATE personnes SET nom = ?, prenom = ?, date_de_naissance = ? WHERE id = ?", (nom, prenom, date, id))
         base.close()
 
     #Supprime une personne dans la table personne

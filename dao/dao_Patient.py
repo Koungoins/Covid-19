@@ -2,8 +2,10 @@
 # coding=utf-8
 import SQLiteManager as db
 from dao import dao_personne
+from dao import dao_coordonnees
 from objects import personne
 from objects import patient
+from objects import coordonnees
 
 
 
@@ -12,7 +14,6 @@ class dao_Patient(dao_personne.dao_Personne) :
     #Constructeur
     def __init__(self):
         print("")
-
 
     #Recherche si les acces existe
     def connexion(self, login, passe):
@@ -46,13 +47,57 @@ class dao_Patient(dao_personne.dao_Personne) :
         if max == None : max = 0
         return max + 1
 
+    #Nombre de nouveaux patients aujourd'hui
+    def get_nbr_nouveaux_patients_aujourdhui(self):
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        cursor.execute('''SELECT COUNT(*)
+                            FROM patients 
+                            WHERE date_teste = CURRENT_DATE''')
+        result = cursor.fetchall()
+        max = 0
+        if len(result) > 0 :
+            max = result[0][0]
+        base.close()
+        if max == None : max = 0
+        return max
+
+    #Nombre de nouveaux patients depuis 
+    def get_nbr_patients_depuis(self, debut):
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        requete = "SELECT COUNT(*) FROM patients  WHERE date_teste BETWEEN \'" + str(debut) + "\' AND  CURRENT_DATE"
+        cursor.execute(requete)
+        result = cursor.fetchall()
+        max = 0
+        if len(result) > 0 :
+            max = result[0][0]
+        base.close()
+        if max == None : max = 0
+        return max
+
+
+#Nombre de nouveaux patients aujourd'hui
+    def get_nbr_patients_dates(self, debut, fin):
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        requete = "SELECT COUNT(*) FROM patients  WHERE date_teste BETWEEN \'" + str(debut) + "\' AND  \'" + str(fin) + "\'"
+        cursor.execute(requete)
+        result = cursor.fetchall()
+        max = 0
+        if len(result) > 0 :
+            max = result[0][0]
+        base.close()
+        if max == None : max = 0
+        return max
 
     #Récupère les données d'un patient dans la table patients à l'aide de son ID et renvoi un objet Patient
     def get_patient(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, nss, id_personne, id_medecin FROM patients WHERE id = " + str(id))
+        cursor.execute("SELECT id, nss, id_personne, id_medecin, date_teste FROM patients WHERE id = " + str(id))
         result = cursor.fetchall()
+        base.close()
         p = None
         if len(result) > 0 :
             p = patient.Patient()
@@ -60,11 +105,13 @@ class dao_Patient(dao_personne.dao_Personne) :
             p.set_nss(result[0][1])
             p.set_id_personne(result[0][2])
             p.set_id_medecin(result[0][3])
-        base.close()
+            p.set_date_teste(result[0][4])
         pers = super().get_personne(p.get_id_personne())
         p.set_nom(pers.get_nom())
         p.set_prenom(pers.get_prenom())
         p.set_date_de_naiss(pers.get_date_de_naiss())
+        coord = dao_coordonnees.dao_Coordonnees().get_coordonnees_personne(p.get_id_personne())
+        p.set_coordonnees2(coord)
         return p
 
     #Renvoi la liste de toutes les personnes
@@ -90,11 +137,12 @@ class dao_Patient(dao_personne.dao_Personne) :
     #Crée une nouvelle personne dans la table personne à l'aide des infos contenues dans l'objet Personne en argument
     def insert_patient(self, pat) :
         id_pers = super().insert_personne2(pat.get_nom(), pat.get_prenom(), pat.get_date_de_naiss())
+        dao_coordonnees.dao_Coordonnees().insert_coordonnees(pat.get_coordonnees())
         base = db.SQLiteManager()
         cursor = base.connect()
         current_id = self.next_id_patient()
-        cursor.execute("INSERT INTO patients (id, nss, id_personne, id_medecin) VALUES (?, ?, ?, ?)",
-        (current_id, pat.get_nss(), id_pers, pat.get_id_medecin()))
+        cursor.execute("INSERT INTO patients (id, nss, id_personne, id_medecin, date_teste) VALUES (?, ?, ?, ?, ?)",
+        (current_id, pat.get_nss(), id_pers, pat.get_id_medecin(), pat.get_date_teste()))
         base.close()
         return current_id
 
@@ -102,6 +150,6 @@ class dao_Patient(dao_personne.dao_Personne) :
     def update_patient(self, pers) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("UPDATE personnes SET nom = ?, prenom = ? ,date_de_naissance = ? WHERE id = ?",
+        cursor.execute("UPDATE patients SET nss = ?, prenom = ?, date_de_naissance = ?, nss = ? WHERE id = ?",
         (pers.get_nom(), pers.get_prenom(), pers.get_date_de_naiss(), pers.get_id()))
         base.close()

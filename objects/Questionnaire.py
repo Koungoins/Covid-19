@@ -12,6 +12,7 @@ class Questionnaire(object) :
         self.commentaire = ""
         self.analyse = ""
         self.reponses = []
+        self.etat_patient = -1
 
     #Saisir un acces avec tout ses attributs d'un seul coup
     def set_questionnaire(self, id, date, heure, id_patient, commentaire, analyse):
@@ -22,6 +23,7 @@ class Questionnaire(object) :
         self.commentaire = commentaire
         self.analyse = ""
         self.reponses = []
+        self.etat_patient = -1
 
     #Affichage
     def to_string(self) :
@@ -49,6 +51,9 @@ class Questionnaire(object) :
     def set_reponses(self, reponses) :
         self.reponses = reponses
 
+    def set_etat_patient(self, etat_patient) :
+        self.etat_patient = etat_patient
+
     #Les GETTER permettent de récupérer les valeurs des attributs proprement
     def get_id(self) :
         return self.id
@@ -70,3 +75,6 @@ class Questionnaire(object) :
 
     def get_reponses(self) :
         return self.reponses
+
+    def get_etat_patient(self) :
+        return self.etat_patient

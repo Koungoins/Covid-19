@@ -10,7 +10,7 @@ class Personne(object) :
         self.nom = ""
         self.prenom = ""
         self.date_de_naiss = ""
-        self.coordonnees = None
+        self.coordonnees = coordonnees.Coordonnees()
 
     #Saisir une personne avec tout ses attributs d'un seul coup
     def set_personne(self, id, nom, prenom, date_de_naiss):
@@ -18,6 +18,7 @@ class Personne(object) :
         self.nom = nom
         self.prenom = prenom
         self.date_de_naiss = date_de_naiss
+        self.coordonnees = coordonnees.Coordonnees()
 
     #Affichage
     def to_string(self) :

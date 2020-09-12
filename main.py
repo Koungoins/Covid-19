@@ -3,6 +3,9 @@
 import threading as thread
 import SQLiteManager as db
 import os, os.path
+from time import gmtime, strftime
+from datetime import date
+from datetime import timedelta
 import cherrypy
 
 #Classes base de données
@@ -34,6 +37,7 @@ class Accueil(html_page.Page_html):
             Page d'accueil
         </legend>
         <div>
+            <div class="button_vert"><a href="/tableau_chiffres/">Covid-19 en temps réel</a></div>
             <div class="button_vert"><a href="/patients/">Espace patients</a></div>
             <div class="button_vert"><a href="/medecins/">Espace médecins</a></div>
         </div>
@@ -75,4 +79,7 @@ if __name__ == '__main__' :
 	}
     #db.SQLiteManager().init_data_base()
     cherrypy.quickstart(root, '/', config)
-
+    #import utils
+    #d = date.today()
+    #jours = d - timedelta(days=2)
+    #print("Date:"+str(jours.year)+ "-" +str(jours.month)+"-"+str(jours.day))

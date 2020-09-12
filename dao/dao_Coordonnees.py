@@ -38,7 +38,7 @@ class dao_Coordonnees(object)  :
     def get_coordonnees_personne(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, telephone, adresse_postale, adresse_mail, id_personne FROM coordonnees WHERE id_personne = ?", (id))
+        cursor.execute("SELECT id, telephone, adresse_postale, adresse_mail, id_personne FROM coordonnees WHERE id_personne = " + str(id))
         result = cursor.fetchall()
         p = None
         if len(result) > 0 :
@@ -52,7 +52,7 @@ class dao_Coordonnees(object)  :
         base = db.SQLiteManager()
         cursor = base.connect()
         id_next = self.next_id()
-        cursor.execute("INSERT INTO coordonnees(id, telephone, adresse_postale, adresse_mail, id_personne) VALUES (?, ?, ?, ?, ?)",
+        cursor.execute("INSERT INTO coordonnees (id, telephone, adresse_postale, adresse_mail, id_personne) VALUES (?, ?, ?, ?, ?)",
         (id_next, coord.get_telephone(), coord.get_adresse_postale(), coord.get_adresse_mail(), coord.get_id_personne()))
         base.close()
         return id_next

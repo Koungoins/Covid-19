@@ -48,7 +48,7 @@ class Coordonnees(object) :
         return self.telephone
 
     def get_adresse_postale(self) :
-        return self.set_adresse_postale
+        return self.adresse_postale
 
     def get_adresse_mail(self) :
         return self.adresse_mail
