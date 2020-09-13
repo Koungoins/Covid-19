@@ -3,11 +3,16 @@
 
 #import cherrypy
 import model_global
+import hashlib
 from datetime import date
 from time import gmtime, strftime
 from datetime import timedelta
 from dao import dao_patient
+from dao import dao_personne
 from dao import dao_questionnaire
+from objects import personne
+from dao import dao_acces
+from objects import acces
 
 
 class Page_html(object) :
@@ -186,6 +191,10 @@ legend {
 
 .liste_questions img {
 	width: 20px;
+}
+
+.rep_alerte {
+    color: red;
 }
 
 .button_vert {
@@ -455,6 +464,23 @@ legend {
         page = page + self.footer()
         return page
     tableau_chiffres.exposed = True
+
+    def get_acces_utilisateur(self, id_personne):
+        pers = dao_personne.dao_Personne().get_personne(id_personne)
+        dateN = pers.get_date_de_naiss()
+        dateI = int(dateN.replace("-", "")) + pers.get_id()
+        passe = hex(dateI)
+        passe = passe.replace("0x", "")
+        passeAcc = passe.encode()
+        passeAcc = hashlib.sha1(passeAcc).hexdigest()
+        acc = acces.Acces()
+        login = pers.get_prenom().lower()[0] + pers.get_nom().lower()[0] + "." + pers.get_nom().replace(" ", "").lower()
+        acc.set_id_personne(id_personne)
+        acc.set_login(login)
+        acc.set_mot_de_passe(passeAcc)
+        dao_acces.dao_Acces().insert_acces(acc)
+        page = "Login : <b>" + login + "</b><br>Mot de passe : <b>" + passe + "</b>"
+        return page
 
 
     def deconnexion(self) :

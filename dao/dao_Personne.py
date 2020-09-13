@@ -29,14 +29,19 @@ class dao_Personne(object)  :
     def get_personne(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, nom, prenom, date_de_naissance FROM personnes WHERE id = "+str(id))
+        req = "SELECT id, nom, prenom, date_de_naissance FROM personnes WHERE id = " + str(id)
+        print(req)
+        cursor.execute(req)
         result = cursor.fetchall()
         base.close()
         p = None
         if len(result) > 0 :
             p = per.Personne()
-            p.set_personne(result[0][0], result[0][1], result[0][2], result[0][3])
-            coord = dao_coordonnees.dao_Coordonnees().get_coordonnees_personne(id)
+            p.set_id(result[0][0])
+            p.set_nom(result[0][1])
+            p.set_prenom(result[0][2])
+            p.set_date_de_naiss(result[0][3])
+            coord = dao_coordonnees.dao_Coordonnees().get_coordonnees_personne(p.get_id())
             p.set_coordonnees2(coord)
         return p
 

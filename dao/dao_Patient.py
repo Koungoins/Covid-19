@@ -1,5 +1,6 @@
 #!/bin/env python
 # coding=utf-8
+import hashlib
 import SQLiteManager as db
 from dao import dao_personne
 from dao import dao_coordonnees
@@ -17,19 +18,25 @@ class dao_Patient(dao_personne.dao_Personne) :
 
     #Recherche si les acces existe
     def connexion(self, login, passe):
+        passeAcc = passe.encode()
+        passeAcc = hashlib.sha1(passeAcc).hexdigest()
         base = db.SQLiteManager()
         cursor = base.connect()
         sql  =  '''SELECT pat.id, pat.nss, pat.id_personne, pat.id_medecin
         FROM patients AS pat
         JOIN personnes AS pers ON pat.id_personne = pers.id
         JOIN acces AS acc ON acc.id_personne = pers.id '''
-        sql = sql + "WHERE acc.login LIKE '"+login+"' AND acc.mot_de_passe LIKE '"+passe+"'"
+        sql = sql + "WHERE acc.login LIKE '" + login + "' AND acc.mot_de_passe LIKE '" + passeAcc + "'"
+        print(sql)
         cursor.execute(sql)
         result = cursor.fetchall()
         base.close()
         if len(result) > 0 :
             ac = patient.Patient()
-            ac.set_patient2(result[0][0], result[0][1], result[0][2], result[0][3])
+            ac.set_id(result[0][0])
+            ac.set_nss(result[0][1])
+            ac.set_id_personne(result[0][2])
+            ac.set_id_medecin(result[0][3])
             return ac
         else:
             return None

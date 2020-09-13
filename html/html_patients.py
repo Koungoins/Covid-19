@@ -58,6 +58,7 @@ class Pages_Patients(html_page.Page_html) :
 
     def accueil_patient(self):
         id_patient = model_global.get_user_id()
+        print("Id user session="+str(id_patient))
         page = super().header()
         page = page + '''<fieldset class="cadre">
             <legend>
@@ -458,12 +459,10 @@ class Pages_Patients(html_page.Page_html) :
         p = dao_patient.dao_Patient().get_patient(model_global.get_user_id())
         page = page + '''<fieldset class="cadre">
         <legend>
-            Les des patients
+            Informations personnelles
         </legend>
         <div>'''
         page = page + '''
-        <title>Créer un nouveau patient</title>
-        <h1></h1>
         <form action="mise_a_jour_patient" method="GET">
             <div>
                 <label for="nom">Nom:</label>

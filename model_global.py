@@ -14,6 +14,7 @@ user_prenom = "prenom_user"
 
 
 def connect_user(type, id, nom, prenom, id_personne):
+    print("Connecté : id="+str(id)+", nom="+nom+", prenom="+prenom+", id_personne="+str(id_personne))
     cherrypy.session[user_connected] = True
     cherrypy.session[user_type] = type
     cherrypy.session[user_id] = id

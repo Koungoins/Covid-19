@@ -80,11 +80,13 @@ class dao_Reponse(object)  :
     def get_reponses_questionnaire(self, id_questionnaire, niveau) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute('''SELECT rep.id, rep.reponse, rep.id_question, rep.id_questionnaire, qu.id
+        req = '''SELECT rep.id, rep.reponse, rep.id_question, rep.id_questionnaire, qu.id
                         FROM reponses AS rep
                         JOIN questions AS qu ON rep.id_question = qu.id
                         JOIN questionnaires AS quest ON rep.id_questionnaire = quest.id
-                        WHERE  quest.id = ''' + str(id_questionnaire) + ''' AND qu.niveau = ''' + str(niveau) + ''' ORDER BY qu.id''')
+                        WHERE  quest.id = ''' + str(id_questionnaire) + ''' AND qu.niveau = ''' + str(niveau) + ''' ORDER BY qu.id'''
+        print(req)
+        cursor.execute(req)
         result = cursor.fetchall()
         p = []
         pcur = None

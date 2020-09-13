@@ -22,12 +22,12 @@ class Question(object) :
         self.niveau = niveau
         self.valeur = valeur
         self.type_reponse = type_reponse
-        self.reponse_alerte = None
+        self.reponse_alerte = reponse_alerte
         self.comparateur = comparateur
 
     #Affichage
     def to_string(self) :
-        return "<b>" + self.intitule + "</b><br>" + self.description + ", " + self.valeur + ", " + str(self.niveau) + ", " + self.type_reponse + ", " + str(self.reponse_alerte)
+        return "<b>" + self.intitule + "</b><br>" + self.description + "<br> Valeur par defaut : " + self.valeur + ", Valeur alerte : " + str(self.reponse_alerte)
 
     #Les SETTER permettent de saisirs les valeurs des attributs proprement
     def set_id(self, id) :

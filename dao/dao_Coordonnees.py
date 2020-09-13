@@ -38,7 +38,9 @@ class dao_Coordonnees(object)  :
     def get_coordonnees_personne(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, telephone, adresse_postale, adresse_mail, id_personne FROM coordonnees WHERE id_personne = " + str(id))
+        req = "SELECT id, telephone, adresse_postale, adresse_mail, id_personne FROM coordonnees WHERE id_personne = " + str(id)
+        print(req)
+        cursor.execute(req)
         result = cursor.fetchall()
         p = None
         if len(result) > 0 :

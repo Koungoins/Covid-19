@@ -27,7 +27,7 @@ class Patient(personne.Personne):
 
     #Affichage
     def to_string(self) :
-        return super().to_string() +", "+ str(self.nss) +", "+ str(self.id_personne)+ ", "+ str(self.id_medecin)
+        return super().get_nom() + " " + super().get_prenom() + " - "+ str(self.nss)
 
     #Les SETTER permettent de saisirs les valeurs des attributs proprement
     def set_nss(self, nss) :

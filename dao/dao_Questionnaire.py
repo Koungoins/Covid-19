@@ -73,7 +73,7 @@ class dao_Questionnaire(object)  :
         auj = aujourdhui.strftime("%Y-%m-%d")
         base = db.SQLiteManager()
         cursor = base.connect()
-        req = "SELECT COUNT(*) FROM questionnaires WHERE id_patient=2 AND date_q=\'" + auj + "\'"
+        req = "SELECT COUNT(*) FROM questionnaires WHERE id_patient="+str(id_patient)+" AND date_q=\'" + auj + "\'"
         print(req)
         cursor.execute(req)
         result = cursor.fetchall()
@@ -102,10 +102,12 @@ class dao_Questionnaire(object)  :
     def get_questionnaires_patient(self, id, niveau) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute('''SELECT id, date_q, heure, id_patient, commentaire, analyse
+        req = '''SELECT id, date_q, heure, id_patient, commentaire, analyse
                             FROM questionnaires
                             WHERE id_patient = ''' + str(id) + '''
-                            ORDER BY date_q DESC''')
+                            ORDER BY date_q DESC'''
+        print(req)
+        cursor.execute(req)
         result = cursor.fetchall()
         base.close()
         p = []

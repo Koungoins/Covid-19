@@ -1,5 +1,6 @@
 #!/bin/env python
 # coding=utf-8
+import hashlib
 import SQLiteManager as db
 from dao import dao_personne
 from objects import medecin
@@ -13,13 +14,15 @@ class dao_Medecin(dao_personne.dao_Personne) :
 
     #Recherche si les acces existe
     def connexion(self, login, passe):
+        passeAcc = passe.encode()
+        passeAcc = hashlib.sha1(passeAcc).hexdigest()
         base = db.SQLiteManager()
         cursor = base.connect()
         sql = '''SELECT med.id, med.id_personne, pers.nom, pers.prenom, pers.date_de_naissance, med.liberal, med.hopital, med.rpps
             FROM medecins AS med
             JOIN personnes AS pers ON med.id_personne = pers.id
             JOIN acces AS acc ON acc.id_personne = pers.id '''
-        sql = sql + "WHERE acc.login LIKE '" + login + "' AND acc.mot_de_passe LIKE '" + passe + "' "
+        sql = sql + "WHERE acc.login LIKE '" + login + "' AND acc.mot_de_passe LIKE '" + passeAcc + "' "
         cursor.execute(sql)
         result = cursor.fetchall()
         base.close()
@@ -82,7 +85,14 @@ class dao_Medecin(dao_personne.dao_Personne) :
         p = None
         if len(result) > 0 :
             p = medecin.Medecin()
-            p.set_medecin(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4], result[0][5], result[0][6], result[0][7])
+            p.set_id(result[0][0])
+            p.set_id_personne(result[0][1])
+            p.set_liberal(result[0][2])
+            p.set_hopital(result[0][3])
+            p.set_rpps(result[0][4])
+            p.set_nom(result[0][5])
+            p.set_prenom(result[0][6])
+            p.set_date_de_naiss(result[0][7])
         return p
 
 
