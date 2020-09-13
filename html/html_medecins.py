@@ -7,10 +7,12 @@ from dao import dao_medecin
 from dao import dao_patient
 from dao import dao_coordonnees
 from dao import dao_question
+from dao import dao_reponse
 from dao import dao_questionnaire
 from objects import medecin
 from objects import personne
 from objects import patient
+from objects import reponse
 from objects import question
 from objects import questionnaire
 from objects import coordonnees
@@ -51,12 +53,15 @@ class Pages_Medecins(html_page.Page_html):
             Accueil
         </legend>
         <div>'''
-        page = page + '''<ul>
-            <li class="button_vert"><a href="edit_medecin">Modifier mes informations personnelles</a></li>            
-            <li class="button_vert"><a href="ajouter_patient">Nouveau patient</a></li>
+        page = page + "<ul>"
+        liste = dao_patient.dao_Patient().get_patients_medecin_non_analyses(model_global.get_user_id())
+        if len(liste)>0 :
+            page = page + '''<li class="button_vert"><a href="questionnaires_non_analyses">Questionnaires non analysés</a></li>'''
+        page = page + '''<li class="button_vert"><a href="ajouter_patient">Nouveau patient</a></li>
             <li class="button_vert"><a href="liste_patients">Liste des patients</a></li>
             <li class="button_vert"><a href="liste_questions">Liste des questions</a></li>
             <li class="button_vert"><a href="liste_medecins">Liste des médecins</a></li>
+            <li class="button_vert"><a href="edit_medecin">Modifier mes informations personnelles</a></li>
         </ul></div></fieldset>'''
         page = page + super().footer()
         return page
@@ -118,7 +123,6 @@ class Pages_Medecins(html_page.Page_html):
             Les des médecins enregistrés
         </legend>
         <div class="box">'''
-        
         liste = dao_medecin.dao_Medecin().get_all_medecins()
         count = 1
         page = page + "<table>"
@@ -128,7 +132,11 @@ class Pages_Medecins(html_page.Page_html):
                 page = page + '<tr>'
             else :
                 page = page + "<tr class='ligne_gris'>"
-            page = page + '<td>' + c.get_nom() + " " +c.get_prenom()+'</td><td>'+ c.get_hopital() +'</td><td>'+ c.get_coordonnees().get_telephone()+'</td></tr>'
+            coord = dao_coordonnees.dao_Coordonnees().get_coordonnees_personne(c.get_id_personne())
+            tel = ""
+            if not (coord == None) :
+                tel = coord.get_telephone()
+            page = page + '<td>' + c.get_nom() + " " + c.get_prenom() + '</td><td>' + c.get_hopital() +'</td><td>' + tel + '</td></tr>'
             count = count + 1 
         page = page + "</table>"
         page = page + '''</div></fieldset><a href="accueil_medecin">Retour accueil</a>'''
@@ -371,6 +379,7 @@ class Pages_Medecins(html_page.Page_html):
         liste_questions = dao_question.dao_Question().get_questions_niveau(rubrique)
         for quest in liste_questions:
             page = page + "<th>" + quest.get_intitule() + "</th>"
+        page = page + "<th>Etat</th>"
         page = page + "</tr>"
 
         #Création des lignes
@@ -390,7 +399,9 @@ class Pages_Medecins(html_page.Page_html):
             curr_quest = None
             niv_alerte = None
             type_q = None
-            for rep in q.get_reponses() :
+            reponses = dao_reponse.dao_Reponse().get_reponses_questionnaire(q.get_id(), rubrique)
+            for rep in reponses :
+                print("Reponse:"+rep.to_string())
                 curr_quest = liste_questions[indic]
                 comp = curr_quest.get_comparateur()
                 niv_alerte = curr_quest.get_reponse_alerte()
@@ -431,6 +442,19 @@ class Pages_Medecins(html_page.Page_html):
 
                 page = page + str(rep.get_reponse()) + "</td>"
                 indic = indic + 1 
+            print("Etat patient="+str(q.get_etat_patient()))
+            if q.get_etat_patient() == -1:
+                page = page + "<td class='etat_non_analyse'>&nbsp;</td>"
+            elif q.get_etat_patient() == 0:
+                page = page + "<td class='etat_gerrie'>&nbsp;</td>"
+            elif q.get_etat_patient() == 1:
+                page = page + "<td class='etat_moyen'>&nbsp;</td>"
+            elif q.get_etat_patient() == 2:
+                page = page + "<td class='etat_grave'>&nbsp;</td>"
+            elif q.get_etat_patient() == 3:
+                page = page + "<td class='etat_tres_grave'>&nbsp;</td>"
+            elif q.get_etat_patient() == 4:
+                page = page + "<td class='etat_decede'>&nbsp;</td>"
             page = page + "</tr>"
             count = count + 1
 
@@ -438,13 +462,37 @@ class Pages_Medecins(html_page.Page_html):
         page = page + "</div>"
         page = page + "</fieldset>"
         page = page + '<a href="liste_patients">Retour liste des patients</a>'
-        
         page = page + "<div class='infos_patient'>"
         page = page + self.infos_patient(id)
         page = page + "</div>"
         page = page + super().footer()
         return page
     suivi_patient.exposed = True
+
+
+    #Liste des questionnaires non analysés
+    def questionnaires_non_analyses(self):
+        page = super().entete()
+        page = page + '''<fieldset class="cadre">
+        <legend>
+            Questionnaires non analysés
+        </legend>
+        <div>'''
+        liste = dao_patient.dao_Patient().get_patients_medecin_non_analyses(model_global.get_user_id())
+        page = page + "<table>"
+        count = 1
+        for c in liste :
+            if count % 2 == 0:
+                page = page + '<tr>'
+            else :
+                page = page + "<tr class='ligne_gris'>"
+            page = page + '<td>' + c.get_nom() + " " +c.get_prenom()+'</td><td>'+ str(c.get_nss()) +'</td><td> <a href="suivi_patient?id=' + str(c.get_id())+'">Suivi</a></td></tr>'
+            count = count + 1 
+        page = page + "</table>"
+        page = page + "</div></fieldset>"
+        page = page + super().footer()
+        return page
+    questionnaires_non_analyses.exposed = True
 
     def infos_patient(self, id):
         p = dao_patient.dao_Patient().get_patient(id)
@@ -527,7 +575,10 @@ class Pages_Medecins(html_page.Page_html):
         page = page + '<input type="hidden" name="id" value="' + str(id) + '">'
         page = page + '<div class="conteneur_analyse"><div class="text_analyse"><textarea id="reponse" name="analyse" rows="8" cols="50" >' +  quest.get_analyse() + '</textarea></div>'
         page = page + '''<div class="radio_etat">
-                            <div><input type="radio" id="gerrie" name="etat_patient" value=0 checked>
+                            <div><input type="radio" id="non_analyse" name="etat_patient" value=-1 checked>
+                            <label for="non_analyse" >Non analysé</label></div>
+
+                            <div><input type="radio" id="gerrie" name="etat_patient" value=0>
                             <label for="gerrie" class="couleur_gerrie">Guéris</label></div>
 
                             <div class="couleur_moyen"><input type="radio" id="moyen" name="etat_patient" value=1>
@@ -541,8 +592,9 @@ class Pages_Medecins(html_page.Page_html):
 
                             <div><input type="radio" id="decede" name="etat_patient" value=4>
                             <label for="decede" class="couleur_decede">Décèdé</label></div>
-                            <div><input type="submit" value="Valider" class="button_vert"></div>
-                        </div></div>'''
+
+                        </div>
+                        <div><input type="submit" value="Valider" class="button_vert"></div></div>'''
         page = page + "</form>"
         page = page + "</div></fieldset>"
         page = page + super().footer()
@@ -553,7 +605,7 @@ class Pages_Medecins(html_page.Page_html):
         dao_questionnaire.dao_Questionnaire().update_questionnaire2(id, analyse, etat_patient)
         page = super().header()
         page = page + '<fieldset ><legend>Confirmation enregistrement</legend>'
-        page = page + "Analyse enregistrée.<a href='analyse_questionnaire_patient?id=" + str(self.patient_selected) + "'>Retour: " + str(self.patient_selected) + "</a>"
+        page = page + "Analyse enregistrée.<br><a href='suivi_patient?id=" + str(self.patient_selected.get_id()) + "'>Retour</a>"
         page = page + "</div></fieldset>"
         page = page + super().footer()
         return page

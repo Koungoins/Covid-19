@@ -150,6 +150,30 @@ legend {
     color: grey;
 }
 
+.etat_non_analyse {
+    background: white;
+}
+
+.etat_gerrie {
+    background: green;
+}
+
+.etat_moyen {
+    background: #FFE837;
+}
+
+.etat_grave {
+    background: orange;
+}
+
+.etat_tres_grave {
+    background: darkred;
+}
+
+.etat_decede {
+    background: grey;
+}
+
 .conteneur_recap {
     width: 700px;
     float : left;

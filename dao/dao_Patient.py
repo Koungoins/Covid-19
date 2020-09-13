@@ -141,6 +141,28 @@ class dao_Patient(dao_personne.dao_Personne) :
         base.close()
         return p
 
+    #Renvoi la liste de toutes les personnes
+    def get_patients_medecin_non_analyses(self, id_medecin) :
+        base = db.SQLiteManager()
+        cursor = base.connect()
+        req = '''SELECT DISTINCT(pat.id), pat.id_personne, pers.nom, pers.prenom, pers.date_de_naissance, pat.nss, pat.id_medecin
+                            FROM patients AS pat
+                            JOIN personnes AS pers ON pers.id = pat.id_personne
+                            JOIN questionnaires AS quest ON quest.id_patient = pat.id
+                            WHERE pat.id_medecin = ''' + str(id_medecin) + ''' AND quest.etat_patient = -1'''
+        print(req)
+        cursor.execute(req)
+        result = cursor.fetchall()
+        p = []
+        pcur = None
+        for cur in result :
+            #id_patient, id_personne, nom, prenom, daten, nss, id_medecin
+            pcur = patient.Patient()
+            pcur.set_patient(cur[0], cur[1], cur[2], cur[3], cur[4], cur[5], cur[6])
+            p.append(pcur)
+        base.close()
+        return p
+
     #Crée une nouvelle personne dans la table personne à l'aide des infos contenues dans l'objet Personne en argument
     def insert_patient(self, pat) :
         id_pers = super().insert_personne2(pat.get_nom(), pat.get_prenom(), pat.get_date_de_naiss())

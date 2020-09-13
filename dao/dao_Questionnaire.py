@@ -88,13 +88,14 @@ class dao_Questionnaire(object)  :
     def get_questionnaire(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, date_q, heure, id_patient, commentaire, analyse FROM questionnaires WHERE id = " + str(id))
+        cursor.execute("SELECT id, date_q, heure, id_patient, commentaire, analyse, etat_patient FROM questionnaires WHERE id = " + str(id))
         result = cursor.fetchall()
         base.close()
         p = None
         if len(result) > 0 :
             p = per.Questionnaire()
             p.set_questionnaire(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4], result[0][5])
+            p.set_etat_patient(result[0][6])
             p.set_reponses(dao_reponse.dao_Reponse().get_reponses_questionnaire2(id))
         return p
 
@@ -102,7 +103,7 @@ class dao_Questionnaire(object)  :
     def get_questionnaires_patient(self, id, niveau) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        req = '''SELECT id, date_q, heure, id_patient, commentaire, analyse
+        req = '''SELECT id, date_q, heure, id_patient, commentaire, analyse, etat_patient
                             FROM questionnaires
                             WHERE id_patient = ''' + str(id) + '''
                             ORDER BY date_q DESC'''
@@ -120,15 +121,14 @@ class dao_Questionnaire(object)  :
             pcur.set_id_patient(cur[3])
             pcur.set_commentaire(cur[4])
             pcur.set_analyse(cur[5])
-            #Recupere les reponses
-            pcur.set_reponses(dao_reponse.dao_Reponse().get_reponses_questionnaire(id, niveau))
+            pcur.set_etat_patient(cur[6])
             p.append(pcur)
         return p
 
     def get_last_questionnaire(self, id_patient) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute('''SELECT id, date_q, heure, id_patient, commentaire, analyse
+        cursor.execute('''SELECT id, date_q, heure, id_patient, commentaire, analyse, etat_patient
                         FROM questionnaires
                         WHERE  id_patient = '''+ str(id_patient)+''' 
                         AND id=(SELECT MAX(id) FROM questionnaires WHERE id_patient = '''+ str(id_patient)+''')''')
@@ -137,6 +137,7 @@ class dao_Questionnaire(object)  :
         if len(result) > 0 :
             p = per.Questionnaire()
             p.set_questionnaire(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4], result[0][5])
+            p.set_etat_patient(result[0][6])
         base.close()
         return p
 
