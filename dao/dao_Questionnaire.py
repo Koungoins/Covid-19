@@ -100,7 +100,7 @@ class dao_Questionnaire(object)  :
         return p
 
     #Donne les questionnaires du patient du plus recent au plus ancien
-    def get_questionnaires_patient(self, id, niveau) :
+    def get_questionnaires_patient(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
         req = '''SELECT id, date_q, heure, id_patient, commentaire, analyse, etat_patient

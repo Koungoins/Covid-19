@@ -383,7 +383,7 @@ class Pages_Medecins(html_page.Page_html):
         page = page + "</tr>"
 
         #Création des lignes
-        questionnaires = dao_questionnaire.dao_Questionnaire().get_questionnaires_patient(self.patient_selected.get_id(), rubrique)
+        questionnaires = dao_questionnaire.dao_Questionnaire().get_questionnaires_patient(self.patient_selected.get_id())
         count = 2
         indic = 0
         for q in questionnaires :

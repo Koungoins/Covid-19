@@ -65,7 +65,7 @@ class Pages_Patients(html_page.Page_html) :
                 Espace personnel
             </legend>'''
         page = page + '''<ul>
-        <li class="button_vert"><a href="evolution_patient">Voir mon évolution</a></li>'''
+        <li class="button_vert"><a href="evolution_patient?id=''' + str(id_patient)+ '''">Voir mon évolution</a></li>'''
         if dao_questionnaire.dao_Questionnaire().jour_rempli(id_patient) == 0:
             page = page + '''<li class="button_vert"><a href="questionnaire_patient">Questionnaire du jour</a></li>'''
         else :
@@ -75,6 +75,48 @@ class Pages_Patients(html_page.Page_html) :
         page = page + super().footer()
         return page
     accueil_patient.exposed = True
+
+
+    #Liste des questionnaires avec analyse du medecin et etat de santé
+    def evolution_patient(self, id) :
+        page = super().header()
+        page = page + '''<fieldset class="cadre">
+            <legend>
+                Mon évolution
+            </legend>
+            <div>'''
+        page = page + '''<table>
+                            <tr><th>Date</th><th>Analyse médecin</th><th>Etat</th></tr>'''
+        liste = dao_questionnaire.dao_Questionnaire().get_questionnaires_patient(id)
+        for q in liste:
+            page = page +  '<tr><td><a href="resume_questionnaire?id_patient=' + q.get_id_patient() + '&id=' + str(q.get_id()) + '">' + q.get_date() + '</a></td><td>' + q.get_analyse() + '</td>'
+            #Couleur de l'etat
+            if q.get_etat_patient() == -1:
+                page = page + "<td class='etat_non_analyse'>&nbsp;</td>"
+            elif q.get_etat_patient() == 0:
+                page = page + "<td class='etat_gerrie'>&nbsp;</td>"
+            elif q.get_etat_patient() == 1:
+                page = page + "<td class='etat_moyen'>&nbsp;</td>"
+            elif q.get_etat_patient() == 2:
+                page = page + "<td class='etat_grave'>&nbsp;</td>"
+            elif q.get_etat_patient() == 3:
+                page = page + "<td class='etat_tres_grave'>&nbsp;</td>"
+            elif q.get_etat_patient() == 4:
+                page = page + "<td class='etat_decede'>&nbsp;</td>"
+            page = page + '</tr>'
+
+        page = page + "</table>"
+        page = page + '</div></fieldset><a href="accueil_patient">Retour accueil</a>'
+        page = page + super().footer()
+    evolution_patient.exposed = True
+
+
+    #Résumé, vu d'ensemble du questionnaire
+    def resume_questionnaire(self, id_patient, id):
+        
+        page = page + '</div></fieldset><a href="evolution_patient?' + str(id_patient) + '">Retour accueil</a>'
+        page = page + super().footer()
+    resume_questionnaire.exposed = True
 
 
     #Construit les listes de réponses pour stoquer les saisies du patient avant d'enregistrer dans la base
@@ -174,7 +216,13 @@ class Pages_Patients(html_page.Page_html) :
         count = 0
         for i in range(len(self.liste_parametres)) :
             c = self.liste_parametres[i]
-            rep = self.reponses_parametres[i]
+            reponse = "None"
+            if(i<len(self.reponses_parametres)) :
+                rep = self.reponses_parametres[i]
+                reponse = rep.get_reponse()
+            else:
+                reponse = c.get_valeur()
+
             #Mode edition
             if int(count) == int(edit) :
                 page = page + "<form action='enregistrer_question' method='GET'>"
@@ -183,9 +231,9 @@ class Pages_Patients(html_page.Page_html) :
                 page = page + '<br>Réponse : '
                 page = page + '<input type="hidden" name="id" value="' + str(c.get_id()) + '">'
                 if c.get_type_reponse() == "Numérique" :
-                    page = page + '<input type="number" id="reponse" name="reponse" value="' + str(rep.get_reponse()) + '">'
+                    page = page + '<input type="number" id="reponse" name="reponse" value="' + str(reponse) + '">'
                 else :
-                    page = page + '<br><textarea id="reponse" name="reponse" rows="2" cols="40" >' + rep.get_reponse() + '</textarea>'
+                    page = page + '<br><textarea id="reponse" name="reponse" rows="2" cols="40" >' + reponse + '</textarea>'
                 page = page + '<input type="submit" value="V">'
                 page = page + "</form>"
             else :
