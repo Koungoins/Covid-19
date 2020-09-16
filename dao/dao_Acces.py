@@ -51,18 +51,20 @@ class dao_Acces(object) :
 
     #Crée un nouvel acces dans la table acces à l'aide des infos contenues dans l'objet Acces en argument
     def insert_acces(self, acces) :
+        id = self.next_id()
         base = db.SQLiteManager()
         cursor = base.connect()
-        id = self.next_id()
+       
         cursor.execute("INSERT INTO acces VALUES (?, ?, ?, ?)", (id, acces.get_login(), acces.get_mot_de_passe(), acces.get_id_personne()))
         base.close()
         return id
 
     #Crée un nouvel acces dans la table acces à l'aide des infos en argument
     def insert_acces2(self, login, mot_de_passe, id_personne) :
+        id = self.next_id()
         base = db.SQLiteManager()
         cursor = base.connect()
-        id = self.next_id()
+        
         cursor.execute("INSERT INTO acces VALUES (?, ?, ?, ?)",(id, login, mot_de_passe, id_personne))
         base.close()
         return id

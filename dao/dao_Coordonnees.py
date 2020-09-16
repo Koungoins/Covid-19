@@ -42,18 +42,23 @@ class dao_Coordonnees(object)  :
         print(req)
         cursor.execute(req)
         result = cursor.fetchall()
+        base.close()
         p = None
         if len(result) > 0 :
             p = coor.Coordonnees()
-            p.set_coordonnees(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4])
-        base.close()
+            p.set_id(result[0][0])
+            p.set_telephone(result[0][1])
+            p.set_adresse_postale(result[0][2])
+            p.set_adresse_mail(result[0][3])
+            p.set_id_personne(result[0][4])        
         return p
 
     #Crée des nouvelles coordonnées dans la table coordonnées à l'aide des infos contenues dans l'objet Coordonnées en argument
     def insert_coordonnees(self, coord) :
+        id_next = self.next_id()
         base = db.SQLiteManager()
         cursor = base.connect()
-        id_next = self.next_id()
+        
         cursor.execute("INSERT INTO coordonnees (id, telephone, adresse_postale, adresse_mail, id_personne) VALUES (?, ?, ?, ?, ?)",
         (id_next, coord.get_telephone(), coord.get_adresse_postale(), coord.get_adresse_mail(), coord.get_id_personne()))
         base.close()
@@ -61,9 +66,10 @@ class dao_Coordonnees(object)  :
 
     #Crée des nouvelles coordonnées dans la table acces à l'aide des infos en argument
     def insert_coordonnees2(self, telephone, adresse_postale, adresse_mail, id_personne) :
+        id_next = self.next_id()
         base = db.SQLiteManager()
         cursor = base.connect()
-        id_next = self.next_id()
+        
         cursor.execute("INSERT INTO coordonnees VALUES (?, ?, ?, ?, ?)", (id_next, telephone, adresse_postale, adresse_mail, id_personne))
         base.close()
         return id_next

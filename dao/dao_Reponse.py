@@ -116,9 +116,10 @@ class dao_Reponse(object)  :
 
     #Crée une nouvelle personne dans la table personne à l'aide des infos contenues dans l'objet Personne en argument
     def insert_reponse(self, pers) :
+        current_id = self.next_id_reponse()
         base = db.SQLiteManager()
         cursor = base.connect()
-        current_id = self.next_id_reponse()
+        
         cursor.execute("INSERT INTO reponses (id, reponse, id_question, id_questionnaire) VALUES (?, ?, ?, ?)",
         (current_id, pers.get_reponse(), pers.get_id_question(), pers.get_id_questionnaire()))
         base.close()
@@ -126,9 +127,10 @@ class dao_Reponse(object)  :
 
     #Crée une nouvelle personne dans la table personne à l'aide des infos en argument
     def insert_reponse2(self, intitule, description, valeur, niveau, type_reponse, reponse_alerte) :
+        current_id = self.next_id_reponse()
         base = db.SQLiteManager()
         cursor = base.connect()
-        current_id = self.next_id_reponse()
+        
         cursor.execute("INSERT INTO questions (id, intitule, description_q, valeur, niveau, type_reponse, reponse_alerte) VALUES (?, ?, ?, ?, ?, ?, ?)",
         (current_id, intitule, description, valeur, niveau, type_reponse, reponse_alerte))
         base.close()

@@ -18,15 +18,16 @@ class dao_Patient(dao_personne.dao_Personne) :
 
     #Recherche si les acces existe
     def connexion(self, login, passe):
-        passeAcc = passe.encode()
-        passeAcc = hashlib.sha1(passeAcc).hexdigest()
+        #Mise en commentaire du cryptagepour l'exercice
+        #passe = passe.encode()
+        #passe = hashlib.sha1(passe).hexdigest()
         base = db.SQLiteManager()
         cursor = base.connect()
         sql  =  '''SELECT pat.id, pat.nss, pat.id_personne, pat.id_medecin
         FROM patients AS pat
         JOIN personnes AS pers ON pat.id_personne = pers.id
         JOIN acces AS acc ON acc.id_personne = pers.id '''
-        sql = sql + "WHERE acc.login LIKE '" + login + "' AND acc.mot_de_passe LIKE '" + passeAcc + "'"
+        sql = sql + "WHERE acc.login LIKE '" + login + "' AND acc.mot_de_passe LIKE '" + passe + "'"
         print(sql)
         cursor.execute(sql)
         result = cursor.fetchall()
@@ -165,11 +166,12 @@ class dao_Patient(dao_personne.dao_Personne) :
 
     #Crée une nouvelle personne dans la table personne à l'aide des infos contenues dans l'objet Personne en argument
     def insert_patient(self, pat) :
+        current_id = self.next_id_patient()
         id_pers = super().insert_personne2(pat.get_nom(), pat.get_prenom(), pat.get_date_de_naiss())
         dao_coordonnees.dao_Coordonnees().insert_coordonnees(pat.get_coordonnees())
         base = db.SQLiteManager()
         cursor = base.connect()
-        current_id = self.next_id_patient()
+        
         cursor.execute("INSERT INTO patients (id, nss, id_personne, id_medecin, date_teste) VALUES (?, ?, ?, ?, ?)",
         (current_id, pat.get_nss(), id_pers, pat.get_id_medecin(), pat.get_date_teste()))
         base.close()

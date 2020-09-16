@@ -97,7 +97,8 @@ legend {
 }
 
 .infos_patient {
-    float: left;
+    width: 800px;
+    margin: auto;
 }
 
 .recap_nouveaux{
@@ -179,6 +180,10 @@ legend {
     float : left;
 }
 
+.div_etat_patient{
+    width : 100px;
+}
+
 .case_recap {
     width: 300px;
     /*height: 300px;*/
@@ -192,29 +197,44 @@ legend {
 }
 
 .cadre {
-	margin-top: 100px;
+    width: 800px;
+    margin: auto;
+}
+
+table {
+    width: 800px;
 }
 
 .rubriques {
-	width: 550px;
+	width: 800px;
     height: 70px;
-	float: center;
 }
 
 .bouton_bas {
-    width: 550px;
+    width: 800px;
     float:center;
     height: 50px;
+    margin-top: 20px;
 }
 
+.titre {
+    text-align: center;
+    color: #eeab69;
+}
 
 .liste_questions {
-	width: 550px;
+	width: 800px;
 	float:center;
 }
 
 .liste_questions img {
 	width: 20px;
+}
+
+.navigation_pages{
+    width: 10px;
+    text-align: left;
+    margin: auto;
 }
 
 .rep_alerte {
@@ -344,7 +364,7 @@ legend {
         return '''<html>
 		  <head>
             <style type="text/css">'''+self.get_css()+'''</style>
-		  </head><body><div>'''
+		  </head><body>'''
 
     def header(self):
         page = self.entete()
@@ -356,39 +376,42 @@ legend {
             #</div>'''
             page = ""
         else :
-            page = page + str(model_global.get_user_id())  +" Bonjour " + model_global.get_user_nom() + " " + model_global.get_user_prenom()
+            page = page + ' <div style="color: burlywood; font-size: 20px;">Bonjour <b>' + model_global.get_user_nom() + ' ' + model_global.get_user_prenom()+'</b></div>'
             page = page + '''<div><form action="deconnexion" methode="GET">
-                    <input type="submit" value="Déconnexion">
-                </form></div>'''
+                    <input type="submit" value="Déconnexion" class="button_vert">
+                </form></div></div>'''
 
         page = page +  '''</div>
-        <div class="box">'''
+        '''
         return page
 
     def footer(self):
-        return '</div></body></html>'
+        return '</body></html>'
 
     #Page "Connexion"
     def connexion(self, titre, medecin=0):
         page = self.entete()
         page = page + '''<fieldset class="cadre">
-        <legend>
-            Connexion
-        </legend>'''
-        page = page + "<div class='box'>"
-        page = page + '''<div><form action="verif_connexion" methode="GET">'''
+        <legend>'''
+        if medecin == 1 :
+            page = page + "Connexion médecin"
+        else :
+            page = page + "Connexion patient"
+
+        page = page + '''</legend>'''
+        page = page + '''<div style="width: 200px; margin: auto;"><form action="verif_connexion" methode="GET">'''
+        page = page + '''<label for="login">Identifiant :</label><br>
+                    <input type="text" id="login" name="login"><br><br>
+                    <label for="passe">Mot de passe :</label><br>
+                    <input type="password" id="passe" name="passe"><br>
+                    <div style="width: 200px; margin: auto;"> '''
         if medecin == 1 :
             page = page + '<a href="nouveau_medecin">S\'inscrire</a><br>'
-        page = page + '''<label for="login">Identifiant :</label>
-                    <input type="text" id="login" name="login"><br>
-                    <label for="passe">Mot de passe :</label>
-                    <input type="password" id="passe" name="passe"><br>
-                    <div> '''
         page = page + '<input type="submit" value="Connexion" class="button_vert"></div>'
         page = page + '''
                 </form>
             </div>
-        </div></fieldset></div>
+        </fieldset></div>
         '''
         page = page + self.footer()
         return page
@@ -414,7 +437,7 @@ legend {
         _debut_mois_dernier = jours.strftime("%Y-%m-%d")
 
         page = self.entete()
-        page = page + '''<div><div>
+        page = page + '''<div><div class="titre">
                             <h3>Les chiffres du Coronavirus en temps réel <br>''' + auj + '''</h3>
                         </div>'''
         page = page + '<div class="box">'
@@ -483,7 +506,7 @@ legend {
                                 </div>
                             </div>'''
         page = page + '''</div>
-        <div><a href="/accueil/">Accueil</a></div>
+        <div class="navigation_pages"><a href="/accueil/">Accueil</a></div>
         </div>'''
         page = page + self.footer()
         return page
@@ -495,13 +518,16 @@ legend {
         dateI = int(dateN.replace("-", "")) + pers.get_id()
         passe = hex(dateI)
         passe = passe.replace("0x", "")
-        passeAcc = passe.encode()
-        passeAcc = hashlib.sha1(passeAcc).hexdigest()
+
         acc = acces.Acces()
         login = pers.get_prenom().lower()[0] + pers.get_nom().lower()[0] + "." + pers.get_nom().replace(" ", "").lower()
         acc.set_id_personne(id_personne)
         acc.set_login(login)
-        acc.set_mot_de_passe(passeAcc)
+        #Mise en commentaire du cryptage pour l'exercice
+        #passe = passe.encode()
+        #passe = hashlib.sha1(passe).hexdigest()
+
+        acc.set_mot_de_passe(passe)
         dao_acces.dao_Acces().insert_acces(acc)
         page = "Login : <b>" + login + "</b><br>Mot de passe : <b>" + passe + "</b>"
         return page

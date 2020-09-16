@@ -58,7 +58,7 @@ class Pages_Patients(html_page.Page_html) :
 
     def accueil_patient(self):
         id_patient = model_global.get_user_id()
-        print("Id user session="+str(id_patient))
+        print("Id user session=" + str(id_patient))
         page = super().header()
         page = page + '''<fieldset class="cadre">
             <legend>
@@ -80,16 +80,25 @@ class Pages_Patients(html_page.Page_html) :
     #Liste des questionnaires avec analyse du medecin et etat de santé
     def evolution_patient(self, id) :
         page = super().header()
-        page = page + '''<fieldset class="cadre">
+        page = page + '''<div style="width:800px; margin: auto;"><fieldset class="cadre">
             <legend>
                 Mon évolution
             </legend>
             <div>'''
         page = page + '''<table>
-                            <tr><th>Date</th><th>Analyse médecin</th><th>Etat</th></tr>'''
+                            <tr><th class="titre">Date</th><th class="titre">Analyse du médecin</th><th class="titre">Etat</th></tr>'''
         liste = dao_questionnaire.dao_Questionnaire().get_questionnaires_patient(id)
+        count = 1
         for q in liste:
-            page = page +  '<tr><td><a href="resume_questionnaire?id_patient=' + q.get_id_patient() + '&id=' + str(q.get_id()) + '">' + q.get_date() + '</a></td><td>' + q.get_analyse() + '</td>'
+            analyse = "Pas encore analysé par le médecin."
+            if not ((q.get_analyse() == None) or (q.get_analyse() == "")):
+                analyse = q.get_analyse()
+            if count % 2 == 0:
+                page = page +  '<tr class="ligne_gris">'
+            else :
+                page = page +  '<tr>'
+
+            page = page + '<td><a href="resume_questionnaire?id_patient=' + str(q.get_id_patient()) + '&id=' + str(q.get_id()) + '">' + q.get_date() + '</a></td><td>' + analyse + '</td>'
             #Couleur de l'etat
             if q.get_etat_patient() == -1:
                 page = page + "<td class='etat_non_analyse'>&nbsp;</td>"
@@ -104,18 +113,105 @@ class Pages_Patients(html_page.Page_html) :
             elif q.get_etat_patient() == 4:
                 page = page + "<td class='etat_decede'>&nbsp;</td>"
             page = page + '</tr>'
+            count = count + 1
 
         page = page + "</table>"
-        page = page + '</div></fieldset><a href="accueil_patient">Retour accueil</a>'
+        page = page + '</div></fieldset><div style="width:100px; margin:auto;"><a href="accueil_patient">Retour accueil</a></div></div>'
         page = page + super().footer()
+        return page
     evolution_patient.exposed = True
 
 
+    def ligne_reponse(self, niveau, questionnaire):
+        liste_questions = dao_question.dao_Question().get_questions_niveau(niveau)
+        count = 2
+        page = ""
+        rep = ""
+        for quest in liste_questions:
+            for r in questionnaire.get_reponses():
+                if int(quest.get_id()) == int(r.get_id_question()) :
+                    rep = r.get_reponse()
+                    break
+                else :
+                    rep = str(quest.get_id())+"-"+str(r.get_id_question())
+
+            if count%2 == 0:
+                page = page + "<tr><td><b>" + quest.get_intitule() + "</b><br>" + quest.get_description() + "</td><td>" + str(rep) + "</td></tr>"
+            else :
+                page = page + "<tr class='ligne_gris'><td><b>" + quest.get_intitule() + "</b><br>" + quest.get_description() + "</td><td>" + str(rep) + "</td></tr>"
+
+            count = count + 1
+        return page
+
     #Résumé, vu d'ensemble du questionnaire
     def resume_questionnaire(self, id_patient, id):
-        
-        page = page + '</div></fieldset><a href="evolution_patient?' + str(id_patient) + '">Retour accueil</a>'
+        page = super().header()
+        quest = dao_questionnaire.dao_Questionnaire().get_questionnaire(id)
+        page = page + '''<div class="cadre"><fieldset class="cadre">
+                        <legend>
+                                Résumé'''
+        page = page + '''</legend>'''
+        page = page + '<div><table>'
+
+        #Parametres
+        page = page + "<tr><td colspan=2 class='cel_titre_ribrique'><b>Questionnaire du : " + quest.get_date() + "</b></td></tr>"
+        page = page + "<tr><td colspan=2 class='cel_titre_ribrique'>Paramêtres</td></tr>"
+        page = page + self.ligne_reponse(0, quest)
+
+        #Frequents
+        page = page + "<tr><td colspan=2 class='cel_titre_ribrique'>Symptômes fréquents</td></tr>"
+        page = page + self.ligne_reponse(1, quest)
+
+        #Moins frequents
+        page = page + "<tr><td colspan=2 class='cel_titre_ribrique'>Symptômes moins fréquents</td></tr>"
+        page = page + self.ligne_reponse(2, quest)
+
+        #Graves
+        page = page + "<tr><td colspan=2 class='cel_titre_ribrique'>Symptômes graves</td></tr>"
+        page = page + self.ligne_reponse(3, quest)
+
+
+        page = page + "</table>"
+        page = page + "</div>"
+
+        page = page + "</fieldset>"
+        page = page + '<fieldset class="cadre"><legend>Commentaire</legend><div>'
+        if quest.get_commentaire() == None:
+            page = page + ""
+        else:
+            page = page + quest.get_commentaire()
+
+        page = page + "</div></fieldset>"
+
+        page = page + '<fieldset class="cadre"><legend>Analyse du médecin</legend><div>'
+        page = page + '<div class="conteneur_analyse">' 
+        if quest.get_analyse() == None:
+            page = page + ""
+        else :
+            page = page + quest.get_analyse()
+        page = page + '</div>'
+        page = page + '<div class="div_etat_patient">'
+
+        if quest.get_etat_patient() == -1 :
+            page = page + '<div class="etat_non_analyse">Non analysé</div>'
+        elif quest.get_etat_patient() == 0 :
+            page = page + '<div class="etat_gerrie">Guéri</div>'
+        elif quest.get_etat_patient() == 1 :
+            page = page + '<div class="etat_moyen"> Moyen</div>'
+        elif quest.get_etat_patient() == 2 :
+            page = page + '<div class="etat_grave"> Grave</div>'
+        elif quest.get_etat_patient() == 3 :
+            page = page + '<div class="etat_tres_grave"> Très grave</div>'
+        elif quest.get_etat_patient() == 4 :
+            page = page + '<div class="etat_decede"> Décédé</div>'
+
+        page = page + '''</div>
+                        </div>'''
+        page = page + "</fieldset>"
+        page = page + '</div><div style="width:150px; margin:auto;"><a href="evolution_patient?id=' + str(id_patient) + '">Retour évolution</a></div></div>'
+
         page = page + super().footer()
+        return page
     resume_questionnaire.exposed = True
 
 
@@ -211,13 +307,11 @@ class Pages_Patients(html_page.Page_html) :
                         <div class="button"><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div>
                     </div>
                     <div class="liste_questions">'''
-
-        page = page + "<div>"
         count = 0
         for i in range(len(self.liste_parametres)) :
             c = self.liste_parametres[i]
-            reponse = "None"
-            if(i<len(self.reponses_parametres)) :
+            #Si la question est nouvelle, on la réponse par defaut
+            if(i < len(self.reponses_parametres)) :
                 rep = self.reponses_parametres[i]
                 reponse = rep.get_reponse()
             else:
@@ -225,25 +319,38 @@ class Pages_Patients(html_page.Page_html) :
 
             #Mode edition
             if int(count) == int(edit) :
+                if count % 2 == 0:
+                    page = page + '<div style="width:800px">'
+                else :
+                    page = page + '<div class="ligne_gris" style="width:800px;">'
                 page = page + "<form action='enregistrer_question' method='GET'>"
-                page = page + '<br><label for="reponse"><b>' + str(count+1) + ". " + c.get_intitule() + '</b></label>'
-                page = page + "<br>Déscription:" + c.get_description()
+                page = page + '<br><label for="reponse"><b>' + c.get_intitule() + '</b></label>'
+                page = page + "<br>Déscription:" +c.get_description()
                 page = page + '<br>Réponse : '
                 page = page + '<input type="hidden" name="id" value="' + str(c.get_id()) + '">'
                 if c.get_type_reponse() == "Numérique" :
-                    page = page + '<input type="number" id="reponse" name="reponse" value="' + str(reponse) + '">'
+                    page = page + '<input type="number" id="reponse" name="reponse" value="' + str(rep.get_reponse()) + '">'
                 else :
-                    page = page + '<br><textarea id="reponse" name="reponse" rows="2" cols="40" >' + reponse + '</textarea>'
-                page = page + '<input type="submit" value="V">'
-                page = page + "</form>"
+                    page = page + '<br><textarea id="reponse" name="reponse" rows="2" cols="40" >' + rep.get_reponse() + '</textarea>'
+                page = page + '<input type="submit" value="OK" style="background-color:burlywood">'
+                page = page + "</form></div>"
             else :
                 #mode affichage
-                page = page + str(count+1) + ". " + c.get_intitule() + " : <b>" + rep.get_reponse() + '</b> <a href="questions_parametres?edit=' + str(count) + '">'
-                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
+                page = page + '<div style="width:800px">'
+                if count % 2 == 0:
+                    page = page + '<div style="width:700px;'
+                else :
+                    page = page + '<div class="ligne_gris" style="width:700px;'
+
+                page = page +' float:left;height: 26px;">' + c.get_intitule() + ' </div>'
+                if count % 2 == 0:
+                    page = page +'<div style="width:100px;'
+                else:
+                    page = page +'<div class="ligne_gris" style="width:100px;'
+                page = page +'float:left;height: 26px;"> <b>' + rep.get_reponse() + '</b> <a href="questions_parametres?edit=' + str(count) + '">'
+                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a></div></div>'
             count = count + 1
 
-        page = page + "</div>"
-        page = page + " </div>"
         page = page + '<div class="bouton_bas"><div class="button_suiv"><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div></div></div></fieldset>'
         page = page + super().footer()
         return page
@@ -257,7 +364,7 @@ class Pages_Patients(html_page.Page_html) :
         <legend>
             Questionnaire du jour : ''' + self.date + '''
         </legend>'''
-        page = page + '''<div>
+        page = page + '''
             <div class="rubriques">
                 <div class="button"><a href="questions_parametres?rubrique=0">Paramêtres</a></div>
                 <div class="button_selected"><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div>
@@ -265,35 +372,47 @@ class Pages_Patients(html_page.Page_html) :
                 <div class="button"><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div>
             </div>
             <div class="liste_questions">'''
-
-        page = page + "<div>"
         count = 0
         for i in range(len(self.liste_sympt_frequents)) :
             c = self.liste_sympt_frequents[i]
             rep = self.reponses_sympt_frequents[i]
             #Mode edition
             if int(count) == int(edit) :
+                if count % 2 == 0:
+                    page = page + '<div style="width:800px">'
+                else :
+                    page = page + '<div class="ligne_gris" style="width:800px;">'
                 page = page + "<form action='enregistrer_question' method='GET'>"
-                page = page + '<br><label for="reponse"><b>' + str(count+1) + ". " + c.get_intitule() + '</b></label>'
-                page = page + "<br>Déscription:"+c.get_description()
+                page = page + '<br><label for="reponse"><b>' + c.get_intitule() + '</b></label>'
+                page = page + "<br>Déscription:" +c.get_description()
                 page = page + '<br>Réponse : '
                 page = page + '<input type="hidden" name="id" value="' + str(c.get_id()) + '">'
                 if c.get_type_reponse() == "Numérique" :
                     page = page + '<input type="number" id="reponse" name="reponse" value="' + str(rep.get_reponse()) + '">'
                 else :
                     page = page + '<br><textarea id="reponse" name="reponse" rows="2" cols="40" >' + rep.get_reponse() + '</textarea>'
-                page = page + '<input type="submit" value="V">'
-                page = page + "</form>"
+                page = page + '<input type="submit" value="OK" style="background-color:burlywood">'
+                page = page + "</form></div>"
             else :
                 #mode affichage
-                page = page + str(count+1) + ". " + c.get_intitule() + " : <b>" + rep.get_reponse() + '</b> <a href="questions_sympt_frequents?edit=' + str(count) + '">'
-                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
+                page = page + '<div style="width:800px">'
+                if count % 2 == 0:
+                    page = page + '<div style="width:700px;'
+                else :
+                    page = page + '<div class="ligne_gris" style="width:700px;'
+
+                page = page +' float:left;height: 26px;">' + c.get_intitule() + ' </div>'
+                if count % 2 == 0:
+                    page = page +'<div style="width:100px;'
+                else:
+                    page = page +'<div class="ligne_gris" style="width:100px;'
+
+                page = page +'float:left;height: 26px;"> <b>' + rep.get_reponse() + '</b> <a href="questions_sympt_frequents?edit=' + str(count) + '">'
+                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a></div></div>'
             count = count + 1
 
-        page = page + "</div>"
-        page = page + " </div>"
         page = page + '''<div class="bouton_bas"><div class="button_preced"><a href="questions_parametres?rubrique=0">Paramêtres</a></div>
-        <div class="button_suiv"><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div></div></div></fieldset>'''
+        <div class="button_suiv"><a href="questions_sympt_moins_frequents?rubrique=2">Symptômes moins fréquents</a></div></div></fieldset>'''
         page = page + super().footer()
         return page
     questions_sympt_frequents.exposed = True
@@ -322,25 +441,39 @@ class Pages_Patients(html_page.Page_html) :
             rep = self.reponses_sympt_moins_frequents[i]
             #Mode edition
             if int(count) == int(edit) :
+                if count % 2 == 0:
+                    page = page + '<div style="width:800px">'
+                else :
+                    page = page + '<div class="ligne_gris" style="width:800px;">'
                 page = page + "<form action='enregistrer_question' method='GET'>"
-                page = page + '<br><label for="reponse"><b>' + str(count+1) + ". " + c.get_intitule() + '</b></label>'
-                page = page + "<br>Déscription:"+c.get_description()
+                page = page + '<br><label for="reponse"><b>' + c.get_intitule() + '</b></label>'
+                page = page + "<br>Déscription:" +c.get_description()
                 page = page + '<br>Réponse : '
                 page = page + '<input type="hidden" name="id" value="' + str(c.get_id()) + '">'
                 if c.get_type_reponse() == "Numérique" :
                     page = page + '<input type="number" id="reponse" name="reponse" value="' + str(rep.get_reponse()) + '">'
                 else :
                     page = page + '<br><textarea id="reponse" name="reponse" rows="2" cols="40" >' + rep.get_reponse() + '</textarea>'
-                page = page + '<input type="submit" value="V">'
-                page = page + "</form>"
+                page = page + '<input type="submit" value="OK" style="background-color:burlywood">'
+                page = page + "</form></div>"
             else :
                 #mode affichage
-                page = page + str(count+1) + ". " + c.get_intitule() + " : <b>" + rep.get_reponse() + '</b> <a href="questions_sympt_moins_frequents?edit=' + str(count) + '">'
-                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
+                page = page + '<div style="width:800px">'
+                if count % 2 == 0:
+                    page = page + '<div style="width:700px;'
+                else :
+                    page = page + '<div class="ligne_gris" style="width:700px;'
+
+                page = page +' float:left;height: 26px;">' + c.get_intitule() + ' </div>'
+                if count % 2 == 0:
+                    page = page +'<div style="width:100px;'
+                else:
+                    page = page +'<div class="ligne_gris" style="width:100px;'
+
+                page = page +'float:left;height: 26px;"> <b>' + rep.get_reponse() + '</b> <a href="questions_sympt_moins_frequents?edit=' + str(count) + '">'
+                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a></div></div>'
             count = count + 1
 
-        page = page + "</div>"
-        page = page + " </div>"
         page = page + '''<div class="bouton_bas"><div class="button_preced"><a href="questions_sympt_frequents?rubrique=1">Symptômes fréquents</a></div>
         <div class="button_suiv"><a href="questions_sympt_graves?rubrique=3">Symptômes graves</a></div></div></div></fieldset>'''
         page = page + super().footer()
@@ -369,33 +502,49 @@ class Pages_Patients(html_page.Page_html) :
             rep = self.reponses_sympt_graves[i]
             #Mode edition
             if int(count) == int(edit) :
+                if count % 2 == 0:
+                    page = page + '<div style="width:800px">'
+                else :
+                    page = page + '<div class="ligne_gris" style="width:800px;">'
                 page = page + "<form action='enregistrer_question' method='GET'>"
-                page = page + '<br><label for="reponse"><b>' + str(count+1) + ". " + c.get_intitule() + '</b></label>'
-                page = page + "<br>Déscription:"+c.get_description()
+                page = page + '<br><label for="reponse"><b>' + c.get_intitule() + '</b></label>'
+                page = page + "<br>Déscription:" +c.get_description()
                 page = page + '<br>Réponse : '
                 page = page + '<input type="hidden" name="id" value="' + str(c.get_id()) + '">'
                 if c.get_type_reponse() == "Numérique" :
                     page = page + '<input type="number" id="reponse" name="reponse" value="' + str(rep.get_reponse()) + '">'
                 else :
                     page = page + '<br><textarea id="reponse" name="reponse" rows="2" cols="40" >' + rep.get_reponse() + '</textarea>'
-                page = page + '<input type="submit" value="V">'
-                page = page + "</form>"
+                page = page + '<input type="submit" value="OK" style="background-color:burlywood">'
+                page = page + "</form></div>"
             else :
                 #mode affichage
-                page = page + str(count+1) + ". " + c.get_intitule() + " : <b>" + rep.get_reponse() + '</b> <a href="questions_sympt_graves?edit=' + str(count) + '">'
-                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
+                page = page + '<div style="width:800px">'
+                if count % 2 == 0:
+                    page = page + '<div style="width:700px;'
+                else :
+                    page = page + '<div class="ligne_gris" style="width:700px;'
+
+                page = page +' float:left;height: 26px;">' + c.get_intitule() + ' </div>'
+                if count % 2 == 0:
+                    page = page +'<div style="width:100px;'
+                else:
+                    page = page +'<div class="ligne_gris" style="width:100px;'
+
+                page = page +'float:left;height: 26px;"> <b>' + rep.get_reponse() + '</b> <a href="questions_sympt_graves?edit=' + str(count) + '">'
+                page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a></div></div>'
             count = count + 1
 
         #Commentaire du questionnaire
         if int(edit) == 1000 :
-            page = page + "<form action='enregistrer_commentaire' method='GET'>"
+            page = page + "<div><form action='enregistrer_commentaire' method='GET'>"
             page = page + '<br><label for="reponse"><b>Commentaire:</b></label>'
             page = page + '<br><textarea id="reponse" name="reponse" rows="2" cols="40" >'+ self.questionnaire_jour.get_commentaire() + '</textarea>'
-            page = page + '<input type="submit" value="V">'
+            page = page + '<input type="submit" value="OK" style="background-color:burlywood">'
             page = page + "</form>"
         else :
             #mode affichage
-            page = page + "Commentaire : " + self.questionnaire_jour.get_commentaire() + ' <a href="questions_sympt_graves?edit=1000">'
+            page = page + "<div>Commentaire : " + self.questionnaire_jour.get_commentaire() + ' <a href="questions_sympt_graves?edit=1000">'
             page = page +'<img src="/annexes/image_edit.png" alt="Edit"/></a><br>'
 
         page = page + " </div>"

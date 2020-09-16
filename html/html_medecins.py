@@ -23,7 +23,6 @@ import cherrypy
 
 class Pages_Medecins(html_page.Page_html):
 
-
     def __init__(self):
         self.titre_page = "Espace médecins"
         self.rubrique = 0
@@ -52,7 +51,7 @@ class Pages_Medecins(html_page.Page_html):
         <legend>
             Accueil
         </legend>
-        <div>'''
+        <div style="width:800px;">'''
         page = page + "<ul>"
         liste = dao_patient.dao_Patient().get_patients_medecin_non_analyses(model_global.get_user_id())
         if len(liste)>0 :
@@ -74,41 +73,41 @@ class Pages_Medecins(html_page.Page_html):
         <legend>
             Inscription nouveau médecin
         </legend>
-        <div class="box">'''
+        '''
         page = page + '''
         <form action="enregistrer_medecin" method="GET">
-            <div>
-                <label for="nom">Nom:</label>
-                <input type="text" id="nom" name="nom"><br>
+            <table style="width: 500px; margin: auto;">
+                <tr><td><label for="nom">Nom:</label></td>
+                <td><label for="prenom">Prénom:</label></td></tr>
 
-                <label for="prenom">Prénom:</label>
-                <input type="text" id="prenom" name="prenom"><br>
+                <tr><td><input type="text" id="nom" name="nom"></td>                
+                <td><input type="text" id="prenom" name="prenom"></td></tr>
 
-                <label for="dateN">Date de naissance:</label>
-                <input type="date" id="dateN" name="daten"><br>
+                <tr><td><label for="dateN">Date de naissance:</label></td>
+                <td><label for="rpps">Numéro RPPS:</label></td></tr>
 
-                <label for="rpps">Numéro RPPS:</label>
-                <input type="number" id="rpps" name="rpps"><br>
+                <tr><td><input type="date" id="dateN" name="daten"></td>                
+                <td><input type="number" id="rpps" name="rpps"></td></tr>
 
-                <label for="liberal">Libéral:</label>
-                <input type="checkbox" id="liberal" name="liberal"><br>
+                <tr><td><label for="liberal">Libéral:</label>
+                <input type="checkbox" id="liberal" name="liberal"></td>
 
-                <label for="hopital">Hopital:</label>
-                <input type="text" id="hopital" name="hopital"><br>
+                <td><label for="hopital">Hopital:</label></tr>
+                <tr><td></td><td><input type="text" id="hopital" name="hopital"></td></tr>
 
-                <label for="adresse_postale">Adresse postale:</label><br>
-                <textarea id="adresse_postale" name="adresse_postale" rows="3" cols="50" ></textarea><br>
+                <tr><td colspan=2><label for="adresse_postale">Adresse postale:</label></td></tr>
+                <tr><td colspan=2><textarea id="adresse_postale" name="adresse_postale" rows="3" cols="50" ></textarea></td></tr>
 
-                <label for="tel">Numéro de téléphone:</label>
-                <input type="tel" id="phone" name="telephone" pattern="[0-9]{10}"><br>
+                <tr><td><label for="tel">Numéro de téléphone:</label></td>
+                <td><label for="e_mail">Adresse mail:</label></td></tr>
+                
+                <tr><td><input type="tel" id="phone" name="telephone" pattern="[0-9]{10}"></td>                
+                <td><input type="email" id="e_mail" name="e_mail"></td></tr>
 
-                <label for="e_mail">Adresse mail:</label>
-                <input type="email" id="e_mail" name="e_mail"><br>
-
-                <input type="submit" value="Enregistrer" class="button_vert">
-            </div>
+                <tr><td></td><td><input type="submit" value="Enregistrer" class="button_vert"></td></tr>
+            </table>
         </form>
-        </div></fieldset>
+        </fieldset>
         '''
         page = page + super().footer()
         return page
@@ -117,12 +116,12 @@ class Pages_Medecins(html_page.Page_html):
 
     #Affiche la liste des medecins dans la base
     def liste_medecins(self):
-        page = super().entete()
+        page = super().header()
         page = page + '''<fieldset class="cadre">
         <legend>
-            Les des médecins enregistrés
-        </legend>
-        <div class="box">'''
+            Les médecins enregistrés
+        </legend>'''
+        
         liste = dao_medecin.dao_Medecin().get_all_medecins()
         count = 1
         page = page + "<table>"
@@ -139,7 +138,7 @@ class Pages_Medecins(html_page.Page_html):
             page = page + '<td>' + c.get_nom() + " " + c.get_prenom() + '</td><td>' + c.get_hopital() +'</td><td>' + tel + '</td></tr>'
             count = count + 1 
         page = page + "</table>"
-        page = page + '''</div></fieldset><a href="accueil_medecin">Retour accueil</a>'''
+        page = page + '''</fieldset><div style="width: 100px; margin: auto;"><a href="accueil_medecin">Retour accueil</a></div>'''
         page = page + super().footer()
         return page
     liste_medecins.exposed = True
@@ -240,33 +239,32 @@ class Pages_Medecins(html_page.Page_html):
         <div>'''
         page = page + '''
         <form action="enregistrer_patient" method="GET">
-            <div>
-                <label for="nom">Nom:</label>
-                <input type="text" id="nom" name="nom_patient"><br>
+            <table style="width:400px; margin:auto;">
+                <tr><td><label for="nom">Nom:</label></td><td><label for="prenom">Prénom:</label></td></tr>
 
-                <label for="prenom">Prénom:</label>
-                <input type="text" id="prenom" name="prenom_patient"><br>
+                <tr><td><input type="text" id="nom" name="nom_patient"></td>
+                <td><input type="text" id="prenom" name="prenom_patient"></td></tr>
 
-                <label for="dateN">Date de naissance:</label>
-                <input type="date" id="dateN" name="date_patient"><br>
+                <tr><td><label for="dateN">Date de naissance:</label></td>
+                <td><label for="nss">Numéro de Sécurité Sociale:</label></td></tr>
 
-                <label for="nss">Numéro de Sécurité Sociale:</label>
-                <input type="number" id="nss" name="nss"><br>
+                <tr><td><input type="date" id="dateN" name="date_patient"></td>
+                <td><input type="number" id="nss" name="nss"></td></tr>
 
-                <label for="adresse_postale">Adresse postale:</label><br>
-                <textarea id="adresse_postale" name="adresse_postale" rows="3" cols="50" ></textarea><br>
+                <tr><td colspan=2><label for="adresse_postale">Adresse postale:</label></td></tr>
+                <tr><td colspan=2><textarea id="adresse_postale" name="adresse_postale" rows="3" cols="50" ></textarea></td></tr>
 
-                <label for="tel">Numéro de téléphone:</label>
-                <input type="tel" id="phone" name="telephone" pattern="[0-9]{10}"><br>
+                <tr><td><label for="tel">Numéro de téléphone:</label></td>
+                <td><label for="e_mail">Adresse mail:</label></td></tr>
 
-                <label for="e_mail">Adresse mail:</label>
-                <input type="email" id="e_mail" name="e_mail"><br>
+                <tr><td><input type="tel" id="phone" name="telephone" pattern="[0-9]{10}"></td>
+                <td><input type="email" id="e_mail" name="e_mail"></td></tr>
 
-                 <label for="date_teste">Date du teste:</label>
-                <input type="date" id="date_teste" name="date_teste"><br>
+                <tr><td colspan=2><label for="date_teste">Date du teste:</label></td></tr>
 
-                <input type="submit" value="Enregistrer" class="button_vert">
-            </div>
+                <tr><td><input type="date" id="date_teste" name="date_teste"></td>
+                <td><input type="submit" value="Enregistrer" class="button_vert"></td></tr>
+            </table>
         </form>
         </div></fieldset>'''
         page = page + super().footer()
@@ -330,22 +328,43 @@ class Pages_Medecins(html_page.Page_html):
             else :
                 page = page + "<tr class='ligne_gris'>"
             page = page + '<td>' + c.get_nom() + " " +c.get_prenom()+'</td><td>'+ str(c.get_nss()) +'</td><td> <a href="suivi_patient?id=' + str(c.get_id())+'">Suivi</a></td></tr>'
-            count = count + 1 
+            count = count + 1
         page = page + "</table>"
         page = page + "</div></div></fieldset>"
-        page = page + '<a href="accueil_medecin">Retour accueil</a>'
+        page = page + '<div style="width: 100px; margin: auto;"><a href="accueil_medecin">Retour accueil</a></div>'
         page = page + super().footer()
         return page
     liste_patients.exposed = True
+
+    def infos_patient(self, id):
+        p = dao_patient.dao_Patient().get_patient(id)
+        page = super().entete()
+        page = page + '''<fieldset class="cadre">
+        <legend>
+            Informations patient
+        </legend>
+        <div>'''
+        coord = dao_coordonnees.dao_Coordonnees().get_coordonnees_personne(p.get_id_personne())
+        page = page + p.get_prenom() + " " + p.get_nom() + "<br>"
+        if not (coord == None) :
+            page = page +  coord.get_adresse_postale() + "<br>"
+            page = page + "E-mail: " + coord.get_adresse_mail() + "<br>"
+            page = page + "Tel: " + coord.get_telephone() + "<br>"
+        page = page + "</div></fieldset>"
+        return page
+    infos_patient.exposed = True
 
     #Suivie de patient
     def suivi_patient(self, id=-1, rubrique = 0) :
         self.patient_selected = dao_patient.dao_Patient().get_patient(id)
         page = super().header()
+        page = page + "<div class='cadre'>"
+        page = page + self.infos_patient(id)
+        page = page + "</div>"
         page = page + '''<fieldset class="cadre">
         <legend>
-            Suivi de : <b>''' + self.patient_selected.get_prenom() + " " + self.patient_selected.get_nom()+ " - " + str(self.patient_selected.get_nss()) + "<b>"
-        page = page + '''</legend>
+            Suivi
+        </legend>
         <div>'''
         page = page + '''<div class="liste_questions">
                     <div class="rubriques">'''
@@ -441,7 +460,7 @@ class Pages_Medecins(html_page.Page_html):
                             page = page + '<td>'
 
                 page = page + str(rep.get_reponse()) + "</td>"
-                indic = indic + 1 
+                indic = indic + 1
             print("Etat patient="+str(q.get_etat_patient()))
             if q.get_etat_patient() == -1:
                 page = page + "<td class='etat_non_analyse'>&nbsp;</td>"
@@ -461,10 +480,7 @@ class Pages_Medecins(html_page.Page_html):
         page = page + "</table>"
         page = page + "</div>"
         page = page + "</fieldset>"
-        page = page + '<a href="liste_patients">Retour liste des patients</a>'
-        page = page + "<div class='infos_patient'>"
-        page = page + self.infos_patient(id)
-        page = page + "</div>"
+        page = page + '<div style="width: 200px; margin: auto;"><a href="liste_patients">Retour liste des patients</a></div>'
         page = page + super().footer()
         return page
     suivi_patient.exposed = True
@@ -472,7 +488,7 @@ class Pages_Medecins(html_page.Page_html):
 
     #Liste des questionnaires non analysés
     def questionnaires_non_analyses(self):
-        page = super().entete()
+        page = super().header()
         page = page + '''<fieldset class="cadre">
         <legend>
             Questionnaires non analysés
@@ -494,31 +510,12 @@ class Pages_Medecins(html_page.Page_html):
         return page
     questionnaires_non_analyses.exposed = True
 
-    def infos_patient(self, id):
-        p = dao_patient.dao_Patient().get_patient(id)
-        page = super().entete()
-        page = page + '''<fieldset class="cadre">
-        <legend>
-            Informations patient
-        </legend>
-        <div>'''
-        page = page + p.get_prenom() + " " + p.get_nom() + "<br>"
-        if not (p.get_coordonnees() == None) :
-            coord = p.get_coordonnees()
-            page = page +  coord.get_adresse_postale() + "<br>"
-            page = page + "E-mail: " + coord.get_adresse_mail() + "<br>"
-            page = page + "Tel: " + coord.get_telephone() + "<br>"
-        page = page + "</div></fieldset>"
-        return page
-    infos_patient.exposed = True
-
 
     def ligne_reponse(self, niveau, questionnaire):
         liste_questions = dao_question.dao_Question().get_questions_niveau(niveau)
         count = 2
         page = ""
         rep = ""
-        page = page +"taille reps:"+ str(len(questionnaire.get_reponses()))
         for quest in liste_questions:
             for r in questionnaire.get_reponses():
                 if int(quest.get_id()) == int(r.get_id_question()) :
@@ -538,11 +535,13 @@ class Pages_Medecins(html_page.Page_html):
     def analyse_questionnaire_patient(self, id):
         page = super().header()
         quest = dao_questionnaire.dao_Questionnaire().get_questionnaire(id)
-        page = page + '''<fieldset class="cadre">
+        page = page + '<div class="cadre">'
+        page = page + self.infos_patient(quest.get_id_patient())
+        page = page + '''<div class="cadre"><fieldset class="cadre">
                         <legend>
             Suivi de : <b>''' + self.patient_selected.get_prenom() + " " + self.patient_selected.get_nom()+ " - " + str(self.patient_selected.get_nss())
         page = page + '''</legend>'''
-        page = page + '<div><table>'
+        page = page + '<table classe="cadre">'
 
         #Parametres
         page = page + "<tr><td colspan=2 class='cel_titre_ribrique'><b>Questionnaire du : " + quest.get_date() + "</b></td></tr>"
@@ -563,45 +562,64 @@ class Pages_Medecins(html_page.Page_html):
 
 
         page = page + "</table>"
-        page = page + "</div>"
+        
 
         page = page + "</fieldset>"
-        page = page + '<fieldset ><legend>Commentaire</legend><div>'
+        page = page + '<fieldset class="cadre" ><legend>Commentaire</legend>'
         page = page + quest.get_commentaire()
-        page = page + "</div></fieldset>"
+        page = page + "</fieldset>"
 
-        page = page + '<fieldset ><legend>Analyse</legend><div>'
+        page = page + '<fieldset class="cadre"><legend>Analyse</legend><div>'
         page = page + "<form action='enregistrer_analyse' method='GET'>"
         page = page + '<input type="hidden" name="id" value="' + str(id) + '">'
         page = page + '<div class="conteneur_analyse"><div class="text_analyse"><textarea id="reponse" name="analyse" rows="8" cols="50" >' +  quest.get_analyse() + '</textarea></div>'
         page = page + '''<div class="radio_etat">
-                            <div><input type="radio" id="non_analyse" name="etat_patient" value=-1 checked>
+                            <div><input type="radio" id="non_analyse" name="etat_patient" value=-1 '''
+        if quest.get_etat_patient() == -1 :
+            page = page + "checked"
+        page = page + '''>
                             <label for="non_analyse" >Non analysé</label></div>
 
-                            <div><input type="radio" id="gerrie" name="etat_patient" value=0>
+                            <div><input type="radio" id="gerrie" name="etat_patient" value=0'''
+        if quest.get_etat_patient() == 0 :
+            page = page + "checked"
+        page = page + '''>
                             <label for="gerrie" class="couleur_gerrie">Guéris</label></div>
 
-                            <div class="couleur_moyen"><input type="radio" id="moyen" name="etat_patient" value=1>
+                            <div class="couleur_moyen"><input type="radio" id="moyen" name="etat_patient" value=1 '''
+        if quest.get_etat_patient() == 1 :
+            page = page + "checked"
+        page = page + '''>
                             <label for="moyen">Moyen</label></div>
 
-                            <div class="couleur_grave"><input type="radio" id="grave" name="etat_patient" value=2>
+                            <div class="couleur_grave"><input type="radio" id="grave" name="etat_patient" value=2 '''
+        if quest.get_etat_patient() == 2 :
+            page = page + "checked"
+        page = page + '''>
                             <label for="grave">Grave</label></div>
 
-                            <div class="couleur_tres_grave"><input type="radio" id="tres_grave" name="etat_patient" value=3>
+                            <div class="couleur_tres_grave"><input type="radio" id="tres_grave" name="etat_patient" value=3 '''
+        if quest.get_etat_patient() == 3 :
+            page = page + "checked"
+        page = page + '''>
                             <label for="tres_grave">Très grave</label></div>
 
-                            <div><input type="radio" id="decede" name="etat_patient" value=4>
+                            <div><input type="radio" id="decede" name="etat_patient" value=4 '''
+        if quest.get_etat_patient() == 4 :
+            page = page + "checked"
+        page = page + '''>
                             <label for="decede" class="couleur_decede">Décèdé</label></div>
 
                         </div>
                         <div><input type="submit" value="Valider" class="button_vert"></div></div>'''
         page = page + "</form>"
-        page = page + "</div></fieldset>"
+        page = page + "</div></fieldset></div>"
         page = page + super().footer()
         return page
     analyse_questionnaire_patient.exposed = True
 
     def enregistrer_analyse(self, id, analyse, etat_patient) :
+        print("Etat:"+str(etat_patient)+", Analyse:"+analyse)
         dao_questionnaire.dao_Questionnaire().update_questionnaire2(id, analyse, etat_patient)
         page = super().header()
         page = page + '<fieldset ><legend>Confirmation enregistrement</legend>'
@@ -642,12 +660,17 @@ class Pages_Medecins(html_page.Page_html):
 
         #Parametres du patients
         page = page + "<div><a href='nouveau_question?niveau=3'>Ajouter une question</a>"
-        page = page + "<ol>"
+        page = page + '<div style="width:800px;">'
         liste = dao_question.dao_Question().get_questions_niveau(3)
+        count = 1
         for c in liste :
-            page = page + '<li>' + c.to_string() +"</li>"
-        page = page + '''</ol></div></div></div></fieldset>
-        <a href="accueil_medecin">Retour accueil</a>'''
+            if count % 2 == 0:
+                page = page + '<div class="ligne_gris" style="margin-bottom:10px;">' + c.to_string() +"</div>"
+            else :
+                page = page + '<div style="margin-bottom:10px;">' + c.to_string() +"</div>"
+            count = count + 1
+        page = page + '''</div></div></div></div></fieldset>'''
+        page = page + '<div style="width: 100px; margin: auto;"><a href="accueil_medecin">Retour accueil</a></div>'
         page = page + super().footer()
         return page
     questions_sympt_graves.exposed = True
@@ -670,12 +693,17 @@ class Pages_Medecins(html_page.Page_html):
 
         #Parametres du patients
         page = page + "<div><a href='nouveau_question?niveau=2'>Ajouter une question</a>"
-        page = page + "<ol>"
+        page = page + '<div style="width:800px;">'
         liste = dao_question.dao_Question().get_questions_niveau(2)
+        count = 1
         for c in liste :
-            page = page + '<li>' + c.to_string() +"</li>"
-        page = page + '''</ol></div></div></div></fieldset>
-        <a href="accueil_medecin">Retour accueil</a>'''
+            if count % 2 == 0:
+                page = page + '<div class="ligne_gris" style="margin-bottom:10px;">' + c.to_string() +"</div>"
+            else :
+                page = page + '<div style="margin-bottom:10px;">' + c.to_string() +"</div>"
+            count = count + 1
+        page = page + '''</div></div></div></div></fieldset>'''
+        page = page + '<div style="width: 100px; margin: auto;"><a href="accueil_medecin">Retour accueil</a></div>'
         page = page + super().footer()
         return page
     questions_sympt_moins_frequents.exposed = True
@@ -698,12 +726,17 @@ class Pages_Medecins(html_page.Page_html):
 
         #Parametres du patients
         page = page + "<div><a href='nouveau_question?niveau=1'>Ajouter une question</a>"
-        page = page + "<ol>"
+        page = page + '<div style="width:800px;">'
         liste = dao_question.dao_Question().get_questions_niveau(1)
+        count  = 1
         for c in liste :
-            page = page + '<li>' + c.to_string() +"</li>"
-        page = page + '''</ol></div></div></div></fieldset>
-        <a href="accueil_medecin">Retour accueil</a>'''
+            if count % 2 == 0:
+                page = page + '<div class="ligne_gris" style="margin-bottom:10px;">' + c.to_string() +"</div>"
+            else :
+                page = page + '<div style="margin-bottom:10px;">' + c.to_string() +"</div>"
+            count = count + 1
+        page = page + '''</div></div></div></div></fieldset>'''
+        page = page + '<div style="width: 100px; margin: auto;"><a href="accueil_medecin">Retour accueil</a></div>'
         page = page + super().footer()
         return page
     questions_sympt_frequents.exposed = True
@@ -725,17 +758,17 @@ class Pages_Medecins(html_page.Page_html):
                     <div class="liste_questions">'''
         #Parametres du patients
         page = page + "<div><a href='nouveau_question?niveau=0'>Ajouter une question</a>"
-        page = page + "<ol>"
+        page = page + '<div style="width:800px;">'
         liste = dao_question.dao_Question().get_questions_niveau(0)
         count = 1 
         for c in liste :
             if count % 2 == 0:
-                page = page + '<li class="ligne_gris">' + c.to_string() +"</li>"
+                page = page + '<div class="ligne_gris" style="margin-bottom:10px;">' + c.to_string() +"</div>"
             else :
-                page = page + '<li>' + c.to_string() +"</li>"
+                page = page + '<div style="margin-bottom:10px;">' + c.to_string() +"</div>"
             count = count + 1 
-        page = page + '''</ol></div></div></div></fieldset>
-        <a href="accueil_medecin">Retour accueil</a>'''
+        page = page + '''</div></div></div></div></fieldset>'''
+        page = page + '<div style="width: 100px; margin: auto;"><a href="accueil_medecin">Retour accueil</a></div>'
         page = page + super().footer()
         return page
     questions_parametres.exposed = True
@@ -747,7 +780,7 @@ class Pages_Medecins(html_page.Page_html):
             Ajouter une question
         </legend>'''
         page = page + '''
-        <form action="enregistrer_question" method="GET">
+        <form action="enregistrer_question" method="GET" style="width: 400px; margin: auto;">
             <div>
             <label for="niveau">Niveau :</label>
                 <select name="niveau" id="niveau">'''

@@ -21,7 +21,7 @@ class Questionnaire(object) :
         self.heure = heure
         self.id_patient = id_patient
         self.commentaire = commentaire
-        self.analyse = ""
+        self.analyse = analyse
         self.reponses = []
         self.etat_patient = -1
 
@@ -71,7 +71,10 @@ class Questionnaire(object) :
         return self.commentaire
 
     def get_analyse(self) :
-        return self.analyse
+        if self.analyse == None :
+            return ""
+        else :
+            return self.analyse
 
     def get_reponses(self) :
         return self.reponses

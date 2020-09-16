@@ -30,8 +30,7 @@ class Accueil(html_page.Page_html):
 
     def index(self):
         page = super().entete()
-        page = page + '''<div class="box">
-           <div>
+        page = page + '''
         <fieldset class="cadre">
         <legend>
             Page d'accueil
@@ -41,7 +40,7 @@ class Accueil(html_page.Page_html):
             <div class="button_vert"><a href="/patients/">Espace patients</a></div>
             <div class="button_vert"><a href="/medecins/">Espace médecins</a></div>
         </div>
-        </fieldset></div>
+        </fieldset>
         '''
         page = page + super().footer()
         return page
@@ -79,8 +78,4 @@ if __name__ == '__main__' :
 	}
     #db.SQLiteManager().init_data_base()
     cherrypy.quickstart(root, '/', config)
-    #import utils
-    #d = date.today()
-    #jours = d - timedelta(days=2)
-    #print("Date:"+str(jours.year)+ "-" +str(jours.month)+"-"+str(jours.day))
 

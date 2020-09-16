@@ -62,18 +62,20 @@ class dao_Personne(object)  :
 
     #Crée une nouvelle personne dans la table personne à l'aide des infos contenues dans l'objet Personne en argument
     def insert_personne(self, pers) :
+        current_id = self.next_id_personne()
         base = db.SQLiteManager()
         cursor = base.connect()
-        current_id = self.next_id_personne()
+        
         cursor.execute("INSERT INTO personnes VALUES (?,?,?,?)",(current_id, pers.get_nom(), pers.get_prenom(), pers.get_date_de_naiss()))
         base.close()
         return current_id
 
     #Crée une nouvelle personne dans la table personne à l'aide des infos en argument
     def insert_personne2(self, nom, prenom, date) :
+        current_id = self.next_id_personne()
         base = db.SQLiteManager()
         cursor = base.connect()
-        current_id = self.next_id_personne()
+        
         cursor.execute("INSERT INTO personnes VALUES (?, ?, ?, ?)",(current_id, nom, prenom, date))
         base.close()
         return current_id

@@ -44,7 +44,10 @@ class dao_Questionnaire(object)  :
     def questionnaire_etat_dates(self, etat, debut, fin):
         base = db.SQLiteManager()
         cursor = base.connect()
-        req = "SELECT COUNT(DISTINCT id_patient) FROM questionnaires WHERE etat_patient = " + str(etat) + " AND date_q BETWEEN \'" + str(debut) + "\' AND  \'" + str(fin) + "\'"
+        req = '''SELECT COUNT(*) FROM (SELECT quest.id, quest.id_patient, quest.etat_patient
+                FROM questionnaires AS quest
+                JOIN patients AS pat ON pat.id = quest.id_patient
+                WHERE quest.etat_patient = ''' + str(etat) + ''' AND quest.date_q BETWEEN "''' + str(debut) + '''" AND  "''' + str(fin) + '''" GROUP BY quest.id_patient)'''
         print(req)
         cursor.execute(req)
         result = cursor.fetchall()
@@ -57,7 +60,10 @@ class dao_Questionnaire(object)  :
     def questionnaire_etat_depuis(self, etat, date):
         base = db.SQLiteManager()
         cursor = base.connect()
-        req = "SELECT COUNT(DISTINCT id_patient) FROM questionnaires WHERE etat_patient = " + str(etat) + " AND date_q BETWEEN \'" + str(date) + "\' AND  CURRENT_DATE "
+        req = '''SELECT COUNT(*) FROM (SELECT quest.id, quest.id_patient, quest.etat_patient
+                FROM questionnaires AS quest
+                JOIN patients AS pat ON pat.id=quest.id_patient
+                WHERE quest.etat_patient = ''' + str(etat) + ''' AND quest.date_q BETWEEN "''' + str(date) + '''" AND CURRENT_DATE GROUP BY quest.id_patient)'''
         print(req)
         cursor.execute(req)
         result = cursor.fetchall()
@@ -88,7 +94,9 @@ class dao_Questionnaire(object)  :
     def get_questionnaire(self, id) :
         base = db.SQLiteManager()
         cursor = base.connect()
-        cursor.execute("SELECT id, date_q, heure, id_patient, commentaire, analyse, etat_patient FROM questionnaires WHERE id = " + str(id))
+        req = "SELECT id, date_q, heure, id_patient, commentaire, analyse, etat_patient FROM questionnaires WHERE id = " + str(id)
+        print(req)
+        cursor.execute(req)
         result = cursor.fetchall()
         base.close()
         p = None
@@ -144,9 +152,9 @@ class dao_Questionnaire(object)  :
 
     #Crée une nouveau questionnaire dans la table questionnaires à l'aide des infos contenues dans l'objet Questionnaire en argument
     def insert_questionnaire(self, pers) :
-        base = db.SQLiteManager()
-        cursor = base.connect()
         current_id = self.next_id_questionnaire()
+        base = db.SQLiteManager()
+        cursor = base.connect()        
         cursor.execute("INSERT INTO questionnaires (id, date_q, heure, id_patient, commentaire) VALUES (?, ?, ?, ?, ?)",
         (current_id, pers.get_date(), pers.get_heure(), pers.get_id_patient(), pers.get_commentaire()))
         base.close()
@@ -154,9 +162,9 @@ class dao_Questionnaire(object)  :
 
     #Crée une nouvelle personne dans la table personne à l'aide des infos en argument
     def insert_questionnaire2(self, intitule, description, valeur, niveau, commentaire) :
-        base = db.SQLiteManager()
-        cursor = base.connect()
         current_id = self.next_id_questionnaire()
+        base = db.SQLiteManager()
+        cursor = base.connect()        
         cursor.execute("INSERT INTO questions (id, intitule, description_q, valeur, niveau, commentaire) VALUES (?, ?, ?, ?, ?, ?)",
         (current_id, intitule, description, valeur, niveau, commentaire))
         base.close()
@@ -171,6 +179,7 @@ class dao_Questionnaire(object)  :
 
 
     def update_questionnaire2(self, id, analyse, etat_patient) :
+        print("Etat:"+str(etat_patient)+", Analyse:"+analyse)
         base = db.SQLiteManager()
         cursor = base.connect()
         cursor.execute("UPDATE questionnaires SET analyse = ?, etat_patient = ? WHERE id = ?", (analyse, etat_patient, id))
